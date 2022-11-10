@@ -52,10 +52,10 @@ class StoryApi extends Controller
         $orderby = $req->orderby;
         $truyen = Truyen::where('slug',$req->slug_story)->first();
         $chuong = Chuongtruyen::where('id_truyen', $truyen->id)->where('slug', $req->slug)->first();
-
+        $user_chuong_vip = Users_chuongtruyen::where("id_chuong",$chuong->id)->where("bought",1)->where('id_user',$req->id_user)->first();
         $chapter_prev = Chuongtruyen::where('id_truyen',$truyen->id)->where('id','<',$chuong->id)->orderby('created_at','desc')->first();
         $chapter_next = Chuongtruyen::where('id_truyen',$truyen->id)->where('id','>',$chuong->id)->orderby('created_at','asc')->first();
-        if($req->id_user && $chuong->coin==0){
+        if($req->id_user && ($chuong->coin==0 || $user_chuong_vip)){
             $user_chuong = new Users_chuongtruyen();
             $user_chuong->id_user=$req->id_user;
             $user_chuong->id_chuong=$chuong->id;
@@ -80,14 +80,8 @@ class StoryApi extends Controller
 
         $all_chuongtruyen = Chuongtruyen::where('id_truyen',$truyen->id)->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->paginate(20);
         $userChapter = Users_chuongtruyen::get();
-        $check = false;
-        foreach ($userChapter as $value) {
-            if($value->id_chuong==$chuong->id && $req->id_user==$value->id_user && $value->bought==1){
-                $check=true;
-            }
-        }
 
-        if($check || $chuong->coin==0){
+        if(!is_null($user_chuong_vip) || $chuong->coin==0){
             return [
                 'success'=>true,
                 'status'=>200,
@@ -103,7 +97,7 @@ class StoryApi extends Controller
                 ]
             ];
             
-        }elseif($chuong->coin>0 && !$check){
+        }elseif($chuong->coin>0 && is_null($user_chuong_vip)){
             return [
                 'success'=>false,
                 'status'=>400,
@@ -129,7 +123,8 @@ class StoryApi extends Controller
             $user = User::find($req->id_user);
             $truyen = Truyen::where('slug',$req->slug_story)->first();
             $chuong = Chuongtruyen::where('id_truyen', $truyen->id)->where('slug', $req->slug)->first();
-            if($user->coin - $chuong->coin>0){
+            $user_chuong_vip = Users_chuongtruyen::where("id_chuong",$chuong->id)->where("id_user",$user->id)->where("bought",1)->first();
+            if($user->coin - $chuong->coin>0 && is_null($user_chuong_vip)){
                 $user->coin = $user->coin - $chuong->coin;
                 $user->save();
 
@@ -145,23 +140,20 @@ class StoryApi extends Controller
                 return [
                     'success'=>true,
                     'status'=>200,
-                    'data' => [
-                        'items'=>$chuong->content
-                    ]
                 ];
             }
             return [
                     'success'=>false,
                     'status'=>400,
                     'data' => [
-                        'hasMores'=>"Vui lòng nạp tiền"
+                        'hasMores'=>"Xu của bạn không đủ. Vui lòng nạp thêm !"
                     ]
                 ];
         }
 
         return  [
                     'success'=>false,
-                    'status'=>400,
+                    'status'=>411,
                     'data' => [
                         'hasMores'=>"Vui lòng Đăng nhập"
                     ]
