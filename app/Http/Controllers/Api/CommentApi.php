@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Comment;
 use DB;
 
-class AuthApi extends Controller
+class CommentApi extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,24 @@ class AuthApi extends Controller
      */
     public function index(Request $req)
     {
-        $comments_user = Comment::where("id_truyen",$req->id_truyen)->where('id_parent',0)->orderby("created_at",'desc')->get();
-        // dd($comments_user);
+        $check = Comment::where("id_truyen",$req->id_story)->where('id_parent',0)->orderby("created_at",'desc')->get();
+        $comments_story = json_decode(json_encode($check));
+
+        foreach ($check as $key => $value) {
+            $comments_story[$key]->commet_childrens = $value->children_comment()->orderBy("created_at","desc")->get();
+            $comments_story[$key]->user = $value->user_comment()->select("name")->first(); 
+
+            $check = json_decode(json_encode($comments_story[$key]->commet_childrens));
+
+            foreach ($comments_story[$key]->commet_childrens as $index => $item) {
+                $comments_story[$key]->commet_childrens[$index]->user= $item->user_comment()->select("name")->first();
+            }
+        }
+        dd($comments_story);
+        return [
+            "success" => true,
+            "status" => 200,
+            "comments_story" => $comments_story
+        ];
     }
 }

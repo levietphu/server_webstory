@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Truyen;
 use App\Models\Chuongtruyen;
 use App\Models\User;
-use App\Models\Users_chuongtruyen;;
+use App\Models\Users_chuongtruyen;
+use App\Models\Comment;
 use Carbon\Carbon;
 use App\Events\ViewCount;
 use DB;
@@ -32,6 +33,21 @@ class StoryApi extends Controller
         $truyen->dichgia = $afterView->dichgia;
         $truyen->chuongs = $afterView->chuong()->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->select('id','name_chapter','chapter_number','slug','coin','created_at')->paginate(20);
 
+        $check_comment = Comment::where("id_truyen",$afterView->id)->where('id_parent',0)->orderby("created_at",'desc')->get();
+        $comments_story = json_decode(json_encode($check_comment));
+
+        foreach ($check_comment as $key => $value) {
+            $comments_story[$key]->commet_childrens = $value->children_comment()->orderBy("created_at","desc")->get();
+            $comments_story[$key]->user = $value->user_comment()->select("name")->first(); 
+
+            $check_comment = json_decode(json_encode($comments_story[$key]->commet_childrens));
+
+            foreach ($comments_story[$key]->commet_childrens as $index => $item) {
+                $comments_story[$key]->commet_childrens[$index]->user= $item->user_comment()->select("name")->first();
+            }
+        }
+        $truyen->comments_story = $comments_story;
+
         if(!$req->id_user){
             return ['success'=>true,
             'status'=>200,
@@ -39,6 +55,16 @@ class StoryApi extends Controller
                 'items' => $truyen]
             ];
         }else{
+            if($req->content){
+                $comment = new Comment;
+                $comment ->id_user = $req->id_user;
+                $comment ->id_truyen = $afterView->id;
+                $comment ->content = $req->content;
+                $comment ->id_parent = $req->id_parent;
+                $comment->save();
+            }
+            
+
             $check = json_decode(json_encode($truyen->chuongs));
             foreach ($truyen->chuongs as $key=> $value) {
             $check->data[$key]->bought =$value->getChapterPersonal()->where("users_chuongtruyens.id_user",$req->id_user)->where("users_chuongtruyens.bought",1)->first();
