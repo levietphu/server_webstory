@@ -66,8 +66,6 @@ class StoryApi extends Controller
                 'items' => $truyen]
             ];
         }else{
-            
-            
             $check = json_decode(json_encode($truyen->chuongs));
             foreach ($truyen->chuongs as $key=> $value) {
             $check->data[$key]->bought =$value->getChapterPersonal()->where("users_chuongtruyens.id_user",$req->id_user)->where("users_chuongtruyens.bought",1)->first();
@@ -122,7 +120,13 @@ class StoryApi extends Controller
             $slug_next = $chapter_next->slug;
         }
 
-        $all_chuongtruyen = Chuongtruyen::where('id_truyen',$truyen->id)->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->paginate(20);
+        $check = Chuongtruyen::where('id_truyen',$truyen->id)->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->select("id","slug",'chapter_number',"name_chapter","created_at","coin")->paginate(20);
+        $all_chuongtruyen = json_decode(json_encode($check));
+        if($req->id_user){
+            foreach ($check as $key=> $value) {
+            $all_chuongtruyen->data[$key]->bought =$value->getChapterPersonal()->where("users_chuongtruyens.id_user",$req->id_user)->where("users_chuongtruyens.bought",1)->first();
+            }
+        }
         $userChapter = Users_chuongtruyen::get();
 
         if(!is_null($user_chuong_vip) || $chuong->coin==0){
