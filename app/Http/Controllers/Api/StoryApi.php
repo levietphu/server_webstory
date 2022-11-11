@@ -33,6 +33,17 @@ class StoryApi extends Controller
         $truyen->dichgia = $afterView->dichgia;
         $truyen->chuongs = $afterView->chuong()->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->select('id','name_chapter','chapter_number','slug','coin','created_at')->paginate(20);
 
+        if($req->id_user){
+            if($req->content || $req->reply_content){
+                $comment = new Comment;
+                $comment ->id_user = $req->id_user;
+                $comment ->id_truyen = $afterView->id;
+                $comment ->content = is_null($req->content)?$req->reply_content:$req->content;
+                $comment ->id_parent = $req->id_parent;
+                $comment->save();
+            }
+        }
+
         $check_comment = Comment::where("id_truyen",$afterView->id)->where('id_parent',0)->orderby("created_at",'desc')->get();
         $comments_story = json_decode(json_encode($check_comment));
 
@@ -55,16 +66,8 @@ class StoryApi extends Controller
                 'items' => $truyen]
             ];
         }else{
-            if($req->content){
-                $comment = new Comment;
-                $comment ->id_user = $req->id_user;
-                $comment ->id_truyen = $afterView->id;
-                $comment ->content = $req->content;
-                $comment ->id_parent = $req->id_parent;
-                $comment->save();
-            }
             
-
+            
             $check = json_decode(json_encode($truyen->chuongs));
             foreach ($truyen->chuongs as $key=> $value) {
             $check->data[$key]->bought =$value->getChapterPersonal()->where("users_chuongtruyens.id_user",$req->id_user)->where("users_chuongtruyens.bought",1)->first();
