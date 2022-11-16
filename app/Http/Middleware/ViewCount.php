@@ -34,7 +34,7 @@ class ViewCount
         $now=Carbon::now();
         return array_filter($truyen, function ($timestamp) use ($now)
         {
-            return $timestamp->diffInMinutes($now)<3;
+            return $timestamp->diffInMinutes($now)<1;
         });
     }
 
