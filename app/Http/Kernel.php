@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'view_count' => \App\Http\Middleware\ViewCount::class,
         'reading' => \App\Http\Middleware\ReadBook::class,
         'addvisitor' => \App\Http\Middleware\AddVisitor::class,
+        'cors' => \App\Http\Middleware\Cors::class, 
     ];
 }
