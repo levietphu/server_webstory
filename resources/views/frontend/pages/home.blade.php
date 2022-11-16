@@ -1,4 +1,4 @@
-@extends('frontend.layout.layout')
+{{-- @extends('frontend.layout.layout')
 @section('title','Webtruyenchu đọc truyện online đầy đủ cập nhật mới nhất 2021')
 @section('content')
 <div class="container mt-40">
@@ -183,8 +183,8 @@
         </div>
     </div>
 </div>
-@endsection
-{{-- <div>
+@endsection --}}
+<div>
     <p>https://tienvuc.azurewebsites.net/api/home</p>
     <p>https://tienvuc.azurewebsites.net/api/layout</p>
     <p>https://tienvuc.azurewebsites.net/api/cate?slug="..."</p>
@@ -196,4 +196,4 @@
     <p>https://tienvuc.azurewebsites.net/api/login?email="..."&password</p>
     <p>https://tienvuc.azurewebsites.net/api/login?email="..."&password</p>
     <p>https://tienvuc.azurewebsites.net/api/get_story?slug=".."&keyword="..."&orderby="asc"&id_user&page=".."&page="1"</p>
-</div> --}}
+</div>
