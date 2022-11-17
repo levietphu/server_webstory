@@ -25,9 +25,9 @@
     <script type="text/javascript" src="{{url('public/backend')}}/ckeditor/ckeditor.js"></script>
     <script>
     CKEDITOR.replace( 'editor-ckeditor' ,{
-        filebrowserBrowseUrl : '{{url('filemanager')}}/dialog.php?type=2&editor=ckeditor&fldr=',
-        filebrowserUploadUrl : '{{url('filemanager')}}/dialog.php?type=2&editor=ckeditor&fldr=',
-        filebrowserImageBrowseUrl : '{{url('filemanager')}}/dialog.php?type=1&editor=ckeditor&fldr='
+        filebrowserBrowseUrl : '{{url('filemanager')}}/dialog.php?type=2&editor=ckeditor&fldr=&output=embed',
+        filebrowserUploadUrl : '{{url('filemanager')}}/dialog.php?type=2&editor=ckeditor&fldr=&output=embed',
+        filebrowserImageBrowseUrl : '{{url('filemanager')}}/dialog.php?type=1&editor=ckeditor&fldr=&output=embed'
     });
     CKEDITOR.replace('editor');
     </script>
