@@ -141,7 +141,7 @@ r
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 			</div>
 			<div class="modal-body">
-				<iframe src="{{url('filemanager')}}/dialog.php?type=1&editor=ckeditor&field_id=image" style="width: 90%;height: 360px;"></iframe>
+				<iframe src="{{url('filemanager')}}/dialog.php?type=1&editor=ckeditor&field_id=image&output=embed" style="width: 90%;height: 360px;"></iframe>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
