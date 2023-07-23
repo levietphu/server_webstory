@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Backend;
+namespace App\Http\Controllers\Api\cms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,12 +9,13 @@ use App\Models\Chuongtruyen;
 use App\Models\Theloai;
 use App\Models\Tacgia;
 use App\Models\Translator;
+use App\Models\User;
 use DB;
 use Log;
 use App\Http\Requests\AddTruyenRequest;
 use App\Http\Requests\UpdateTruyenRequest;
 
-class TruyenController extends Controller
+class StoryApi extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,10 +24,16 @@ class TruyenController extends Controller
      */
     public function index()
     {
-        $truyen = Truyen::orderby('created_at','desc')->get();
-        // $count_chapter = Chuongtruyen::join("truyens", 'truyens.id','=','chuongtruyens.id_truyen')->count();
-        // dd($count_chapter);
-        return view('backend.truyen.index', compact('truyen'));
+        $check = Truyen::orderby('created_at','desc')->where('status',1)->select('id','name','full','vip','status')->get();
+        $story = json_decode(json_encode($check));
+        foreach ($check as $key => $value) {
+            $story[$key]->all_chapter = $value->chuong->count();
+        }
+        return [
+            "success"=>true,
+            "status"=>200,
+            'story'=>$story
+        ];
     }
 
     /**
@@ -39,7 +46,13 @@ class TruyenController extends Controller
         $tacgia = Tacgia::all();
         $dichgia = Translator::all();
         $theloai = Theloai::orderby('created_at','desc')->get();
-        return view('backend.truyen.create', compact('theloai','tacgia','dichgia'));
+        return [
+            "success"=>true,
+            "status"=>200,
+            'author'=>$tacgia,
+            'translator'=>$dichgia,
+            'cate'=>$theloai,
+        ];
     }
 
     /**
@@ -48,33 +61,45 @@ class TruyenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $req)
+    public function store(AddTruyenRequest $req)
     {
-        $image = str_replace(url('public/uploads'),'',$req->image) ;
-        dd($req->id_theloai);
+         $image = $req->file('image')->getClientOriginalName();  
+
+        //upload ảnh lên thư mục      
+        $req->file('image')->move('public/uploads/Truyện/', $image);
         try{
             DB::beginTransaction();
             $truyen = new Truyen;
-            $truyen->id_tacgia = $req->id_tacgia;
+            $truyen->id_tacgia = $req->id_author;
             $truyen->id_trans = $req->id_trans;
             $truyen->name= $req->name;
             $truyen->slug= $req->slug;
             $truyen->introduce= $req->introduce;
-            $truyen->image= $image;
+            $truyen->image= 'Truyện/'.$image;
             $truyen->discount= $req->discount;
             $truyen->recommended= $req->recommended;
             $truyen->status= $req->status;
             $truyen->full= $req->full;
             $truyen->vip= $req->vip;
             $truyen->hot= $req->hot;
+            $truyen->id_user = $req->id_user;
             $truyen->save();
-            $truyen->truyen()->attach($req->id_theloai);
+            $truyen->truyen()->attach($req->id_cate);
 
             DB::commit();
-            return redirect()->route('truyen.index')->with('success','Thêm mới thành công');
+            return [
+            "success" => true,
+            "status" => 200,
+            "messsage" =>"Thêm mới truyện thành công"
+        ];
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+            return [
+                "success" => false,
+                "status" => 400,
+                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
+            ];
         }
     }
 
@@ -101,7 +126,15 @@ class TruyenController extends Controller
         $dichgia = Translator::all();
         $theloai = Theloai::orderby('created_at','desc')->get();
         $edit = Truyen::find($id);
-        return view('backend.truyen.edit',compact('edit','tacgia','theloai','dichgia'));
+        $edit['author'] = $tacgia;
+        $edit['trans'] = $dichgia;
+        $edit['cate'] = $theloai;
+        $edit['user']=User::find($edit->id_user);
+        return [
+            "success" => true,
+            "status" => 200,
+            "edit" =>"$edit"
+        ];
     }
 
     /**
@@ -113,11 +146,14 @@ class TruyenController extends Controller
      */
     public function update(UpdateTruyenRequest $req, $id)
     {
-        $image = str_replace(url('public/uploads'),'',$req->image) ;
+        $image = $req->file('image')->getClientOriginalName();  
+
+        //upload ảnh lên thư mục      
+        $req->file('image')->move('public/uploads/Truyện/', $image);
         try{
             DB::beginTransaction();
             $truyen = Truyen::find($id);
-            $truyen->id_tacgia = $req->id_tacgia;
+            $truyen->id_tacgia = $req->id_author;
             $truyen->id_trans = $req->id_trans;
             $truyen->name= $req->name;
             $truyen->slug= $req->slug;
@@ -129,14 +165,24 @@ class TruyenController extends Controller
             $truyen->discount= $req->discount;
             $truyen->hot= $req->hot;
             $truyen->status= $req->status;
+            $truyen->id_user = $req->id_user;
             $truyen->save();
-            $truyen->truyen()->sync($req->id_theloai);
+            $truyen->truyen()->sync($req->id_cate);
 
             DB::commit();
-            return redirect()->route('truyen.index')->with('success','Cập nhật thành công');
+            return [
+            "success" => true,
+            "status" => 200,
+            "messsage" =>"Cập nhật truyện thành công"
+        ];
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+            return [
+                "success" => false,
+                "status" => 400,
+                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
+            ];
         }
     }
 
@@ -149,6 +195,10 @@ class TruyenController extends Controller
     public function destroy($id)
     {
         Truyen::find($id)->delete();
-        return redirect()->back()->with('success','Xóa thành công');
+        return [
+            "success" => true,
+            "status" => 200,
+            "messsage" =>"Xóa truyện thành công"
+        ];
     }
 }

@@ -127,19 +127,19 @@
 </div>
 {{-- Sự kiện upload ảnh --}}
 <div class="modal fade" id="modal-image">
-								<div class="modal-dialog" style="max-width: 70%;max-height: 400px;">
-									<div class="modal-content">
-										<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-										</div>
-										<div class="modal-body">
-											<iframe src="{{url('filemanager')}}/dialog.php?type=1&editor=ckeditor&field_id=image&output=embed" style="width: 90%;height: 360px;"></iframe>
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
-											<button type="button" class="btn btn-primary">Lưu lại</button>
-										</div>
-									</div>
-								</div>
-							</div>
+	<div class="modal-dialog" style="max-width: 70%;max-height: 400px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<div class="modal-body">
+				<iframe src="{{url('filemanager')}}/dialog.php?type=1&editor=ckeditor&field_id=image&output=embed" style="width: 90%;height: 360px;"></iframe>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+				<button type="button" class="btn btn-primary">Lưu lại</button>
+			</div>
+		</div>
+	</div>
+</div>
 @endsection

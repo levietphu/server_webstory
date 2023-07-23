@@ -19,7 +19,7 @@ class HomeApi extends Controller
      */
     public function index()
     {
-        $banners = Banner::join('truyens','banners.id_truyen','=','truyens.id')->orderby('created_at','desc')->limit(4)->get(array(DB::raw('truyens.slug as slugtruyen'),'banners.*'));
+        $banners = Banner::join('truyens','banners.id_truyen','=','truyens.id')->where('banners.status',1)->orderby('created_at','desc')->limit(4)->get(array(DB::raw('truyens.slug as slugtruyen'),'banners.*'));
         
         $recommendedStory = Truyen::join('theloai_truyens','theloai_truyens.id_truyen','=','truyens.id')
         ->join('theloais','theloais.id','=','theloai_truyens.id_theloai')->orderby('truyens.created_at','desc')->where("truyens.recommended",1)->where('truyens.status',1)->groupby('truyens.id')->limit(20)->get(array(DB::raw('theloais.name as nameTheloai'),'truyens.*'));

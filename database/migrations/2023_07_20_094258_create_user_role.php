@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTheloaisTable extends Migration
+class CreateUserRole extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateTheloaisTable extends Migration
      */
     public function up()
     {
-        Schema::create('theloais', function (Blueprint $table) {
+        Schema::create('user_role', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name',255);
-            $table->string('slug',255)->unique();
-            $table->tinyInteger('status')->default(1);
-            $table->timestamps();
+            $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('id_role');
+            $table->foreign('id_user')->references('id')->on('users');
+            $table->foreign('id_role')->references('id')->on('roles');
         });
+
     }
 
     /**
@@ -29,6 +30,6 @@ class CreateTheloaisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('theloais');
+        Schema::dropIfExists('user_role');
     }
 }

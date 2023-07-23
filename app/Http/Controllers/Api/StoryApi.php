@@ -44,11 +44,11 @@ class StoryApi extends Controller
             }
         }
 
-        $check_comment = Comment::where("id_truyen",$afterView->id)->where('id_parent',0)->orderby("created_at",'desc')->get();
+        $check_comment = Comment::where("id_truyen",$afterView->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->get();
         $comments_story = json_decode(json_encode($check_comment));
 
         foreach ($check_comment as $key => $value) {
-            $comments_story[$key]->commet_childrens = $value->children_comment()->orderBy("created_at","desc")->get();
+            $comments_story[$key]->commet_childrens = $value->children_comment()->orderBy("created_at","desc")->where('status',1)->get();
             $comments_story[$key]->user = $value->user_comment()->select("name")->first(); 
 
             $check_comment = json_decode(json_encode($comments_story[$key]->commet_childrens));

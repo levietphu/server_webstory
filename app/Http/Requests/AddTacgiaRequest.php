@@ -32,8 +32,8 @@ class AddTacgiaRequest extends FormRequest
     public function messages()
     {
         return [
-           'name.required' => 'Thể loại không được bỏ trống',
-           'name.max' => 'Thể loại không quá 255 ký tự',
+           'name.required' => 'Tên tác giả không được bỏ trống',
+           'name.max' => 'Tên tác giả không quá 255 ký tự',
            'slug.max' => 'Slug không quá 255 ký tự',
             'slug.required' => 'Slug không được bỏ trống',
             'slug.unique' => 'Slug không được trùng',

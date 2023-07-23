@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTheloaiRequest extends FormRequest
+class UpdatePermissionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,17 +23,17 @@ class UpdateTheloaiRequest extends FormRequest
      */
     public function rules()
     {
+        
         return [
-            'name'=>'required|max:255',
-            'slug'=>'required|max:255|unique:translators,slug,'.$this->id,
+            'name_per'=>'required',
+            'slug'=>'required|max:255|unique:configs,slug,'.$this->id,
             'status'=>'required',
         ];
     }
     public function messages()
     {
         return [
-           'name.required' => 'Tên thể loại không được bỏ trống',
-           'name.max' => 'Tên thể loại không quá 255 ký tự',
+           'name_per.required' => 'Tên quyền không được bỏ trống',
            'slug.max' => 'Slug không quá 255 ký tự',
             'slug.required' => 'Slug không được bỏ trống',
             'slug.unique' => 'Slug không được trùng',

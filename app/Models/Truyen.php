@@ -43,4 +43,5 @@ class Truyen extends Model
     {
         return $this->belongsToMany(Visitor::class, 'views', 'id_truyen', 'id_visit');
     }
+
 }

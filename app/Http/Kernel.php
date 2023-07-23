@@ -43,6 +43,7 @@ class Kernel extends HttpKernel
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            "session_api"
         ],
     ];
 
@@ -69,5 +70,6 @@ class Kernel extends HttpKernel
         'reading' => \App\Http\Middleware\ReadBook::class,
         'addvisitor' => \App\Http\Middleware\AddVisitor::class,
         'cors' => \App\Http\Middleware\Cors::class, 
+        "session_api" => Illuminate\Session\Middleware\StartSession::class,
     ];
 }

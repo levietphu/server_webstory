@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddBannerRequest extends FormRequest
+class UpdateBannerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,6 @@ class AddBannerRequest extends FormRequest
         return [
             'name'=>'required|max:255',
             'image' => 'required|dimensions:min_width=1300,min_height=450||mimes:jpeg,bmp,png,jpg',
-            "status" => "required",
-            "id_truyen" => "required",
         ];
     }
     public function messages()
@@ -38,8 +36,7 @@ class AddBannerRequest extends FormRequest
            'image.required' => 'Ảnh không được bỏ trống',
            'image.dimensions' => 'Ảnh có độ phân giải là 1300 x 450 pixels',
            'image.mimes' => 'Ảnh phải có định dạng jpeg,bmp,png,jpg',
-           "status.required" => "Trạng thái không được bỏ trống",
-           "id_truyen.required" => "Truyện không được bỏ trống"
+           "status.required" => "Trạng thái không được bỏ trống"
         ];
     }
 }

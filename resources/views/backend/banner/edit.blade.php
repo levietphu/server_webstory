@@ -23,8 +23,8 @@
 							@enderror
 						</div>
 						<div class="form-group col-xs-12 col-sm-12 col-md-6">
-							<label for="">Tên tác giả</label>
-							<input type="text" class="form-control" id="name" name="name" onkeyup="ChangeToSlug()" value="{{$edit->name}}">
+							<label for="">Tên Banner</label>
+							<input type="text" class="form-control" id="banner_name" name="name" value="{{$edit->name}}">
 							@error('name')
 							    <div class="alert alert-danger">{{ $message }}</div>
 							@enderror

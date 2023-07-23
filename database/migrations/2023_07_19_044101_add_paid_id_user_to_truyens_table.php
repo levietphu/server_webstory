@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTheloaisTable extends Migration
+class AddPaidIdUserToTruyensTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateTheloaisTable extends Migration
      */
     public function up()
     {
-        Schema::create('theloais', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name',255);
-            $table->string('slug',255)->unique();
-            $table->tinyInteger('status')->default(1);
-            $table->timestamps();
+        Schema::table('truyens', function (Blueprint $table) {
+            $table->unsignedBigInteger('id_user');
+            $table->foreign('id_user')->references('id')->on('users');
         });
     }
 
@@ -29,6 +26,8 @@ class CreateTheloaisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('theloais');
+        Schema::table('truyens', function (Blueprint $table) {
+            //
+        });
     }
 }

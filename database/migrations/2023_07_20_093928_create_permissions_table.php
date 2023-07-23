@@ -3,8 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Theloai;
 
-class CreateTheloaisTable extends Migration
+class CreatePermissionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +14,9 @@ class CreateTheloaisTable extends Migration
      */
     public function up()
     {
-        Schema::create('theloais', function (Blueprint $table) {
+        Schema::create('permissions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name',255);
-            $table->string('slug',255)->unique();
-            $table->tinyInteger('status')->default(1);
+            $table->string('name_per');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateTheloaisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('theloais');
+        Schema::dropIfExists('permissions');
     }
 }

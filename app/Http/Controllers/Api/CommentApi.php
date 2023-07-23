@@ -16,7 +16,7 @@ class CommentApi extends Controller
      */
     public function index(Request $req)
     {
-        $check = Comment::where("id_truyen",$req->id_story)->where('id_parent',0)->orderby("created_at",'desc')->get();
+        $check = Comment::where("id_truyen",$req->id_story)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->get();
         $comments_story = json_decode(json_encode($check));
 
         foreach ($check as $key => $value) {

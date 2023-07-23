@@ -23,7 +23,7 @@ class CreateTruyensTable extends Migration
             $table->boolean('full')->default(false);
             $table->boolean('recommended')->default(false);
             $table->bigInteger('view_count')->default(0);
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
     }

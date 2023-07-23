@@ -19,7 +19,7 @@ class CreateConfigsTable extends Migration
             $table->string('slug', 255)->unique();
             $table->text('value');
             $table->tinyInteger('type')->comment('1 là logo, 2 là quảng cáo, 3 là liên lạc');
-            $table->tinyInteger('status')->comment('0 là ẩn, 1 là hiện');
+            $table->tinyInteger('status')->default(1)->comment('0 là ẩn, 1 là hiện');
             $table->timestamps();
         });
     }
