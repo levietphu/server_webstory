@@ -19,7 +19,7 @@ class CategoryApi extends Controller
      */
     public function index()
     {
-        $cate = Theloai::orderby("created_at","desc")->where('status',1)->get();
+        $cate = Theloai::orderby('created_at','desc')->get();
         return [
             "success" => true,
             "status" => 200,
@@ -39,7 +39,7 @@ class CategoryApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới thể loại thành công"
+            "message" =>"Thêm mới thể loại thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -74,7 +74,7 @@ class CategoryApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật thể loại thành công"
+            "message" =>"Cập nhật thể loại thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -93,7 +93,7 @@ class CategoryApi extends Controller
         return [
             "success" => true,
             "status" => 200,
-            "messsage" => "Xóa thể loại thành công"
+            "message" => "Xóa thể loại thành công"
         ];
     }
 }

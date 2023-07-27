@@ -21,7 +21,7 @@ class BannerApi extends Controller
      */
     public function index()
     {
-        $banner = Banner::orderby("created_at","desc")->where('status',1)->get();
+        $banner = Banner::orderby("created_at","desc")->get();
         return [
             "success" => true,
             "status" => 200,

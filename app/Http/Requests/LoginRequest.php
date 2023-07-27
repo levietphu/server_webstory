@@ -31,11 +31,10 @@ class LoginRequest extends FormRequest
     public function messages()
     {
         return [
-           'email.required' => 'Tài khoản email không được bỏ trống',
-           'email.max' => 'Tài khoản email không được quá 255 ký tự',
+           'email.required' => ' Email không được bỏ trống',
+           'email.max' => ' Email không được quá 255 ký tự',
            'password.required' => 'Mật khẩu không được bỏ trống',
            'password.min' => 'Mật khẩu không được ít hơn 8 ký tự',
-
         ];
     }
 }

@@ -19,7 +19,7 @@ class TranslatorApi extends Controller
      */
     public function index()
     {
-        $trans = Translator::where('status',1)->orderby("created_at","desc")->get();
+        $trans = Translator::orderby("created_at","desc")->get();
         return [
         	"success" => true,
         	"status" => 200,

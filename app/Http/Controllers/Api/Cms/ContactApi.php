@@ -19,7 +19,7 @@ class ContactApi extends Controller
      */
     public function index()
     {
-        $contact = Config::where('type',3)->where('status',1)->orderby("created_at","desc")->get();
+        $contact = Config::where('type',3)->orderby("created_at","desc")->get();
         return [
         	"success" => true,
         	"status" => 200,

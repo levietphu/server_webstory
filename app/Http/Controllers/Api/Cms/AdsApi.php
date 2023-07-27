@@ -19,7 +19,7 @@ class AdsApi extends Controller
      */
     public function index()
     {
-        $ads = Config::where('type',2)->where('status',1)->orderby("created_at","desc")->get();
+        $ads = Config::where('type',2)->orderby("created_at","desc")->get();
         return [
         	"success" => true,
         	"status" => 200,

@@ -19,7 +19,7 @@ class RoleApi extends Controller
      */
     public function index()
     {
-        $check = Role::where('status',1)->get();
+        $check = Role::all();
         foreach ($check as $key => $value) {
             $role[$value->name] = $value->getPer()->get()->count();
         }

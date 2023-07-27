@@ -19,7 +19,7 @@ class LogoApi extends Controller
      */
     public function index()
     {
-        $logo = Config::where('type',1)->where('status',1)->orderby("created_at","desc")->get();
+        $logo = Config::where('type',1)->orderby("created_at","desc")->get();
         return [
         	"success" => true,
         	"status" => 200,

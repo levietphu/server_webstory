@@ -18,7 +18,7 @@ class UserApi extends Controller
      */
     public function index()
     {
-        $check = User::where('status',1)->get();
+        $check = User::all();
         foreach ($check as $value) {
             $user[$value->name] = $value->getRole()->get();
         }
