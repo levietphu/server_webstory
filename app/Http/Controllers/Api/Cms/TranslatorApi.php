@@ -19,7 +19,12 @@ class TranslatorApi extends Controller
      */
     public function index()
     {
-        $trans = Translator::orderby("created_at","desc")->get();
+        $check = Translator::orderby("created_at","desc")->get();
+        $trans= json_decode(json_encode($check));
+        foreach ($check as $key => $value) {
+            // $user_name = $trans->getUserAdd->name;
+            $trans[$key]->name_user_add = $value->getUserAdd->name;
+        }
         return [
         	"success" => true,
         	"status" => 200,
@@ -41,7 +46,7 @@ class TranslatorApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới dịch giả thành công"
+            "message" =>"Thêm mới dịch giả thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -54,15 +59,7 @@ class TranslatorApi extends Controller
         }
     	
     }
-    public function edit($id)
-    {
-        $trans = Translator::find($id);
-        return [
-            "success" => true,
-            "status" => 200,
-            "trans" => $trans
-        ];
-    }
+
     public function update(UpdateTranslatorRequest $req,$id)
     {
         try{
@@ -70,14 +67,13 @@ class TranslatorApi extends Controller
             $trans = Translator::find($id);
             $trans->name= $req->name;
             $trans->slug= $req->slug;
-            $trans->id_user= $req->id_user;
             $trans->status= $req->status;
             $trans->save();
             DB::commit();
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật dịch giả thành công"
+            "message" =>"Cập nhật dịch giả thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -90,15 +86,13 @@ class TranslatorApi extends Controller
         }
         
     }
-    public function hidden($id)
+    public function delete($id)
     {
-        $trans = Translator::find($id);
-        $trans->status=0;
-        $trans->save();
+        $trans = Translator::find($id)->delete();
         return [
             "success" => true,
             "status" => 200,
-            "messsage" => "Ẩn dịch giả thành công"
+            "message" => "Xóa dịch giả thành công"
         ];
     }
 }

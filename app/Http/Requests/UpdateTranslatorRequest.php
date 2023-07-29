@@ -27,7 +27,6 @@ class UpdateTranslatorRequest extends FormRequest
             'name'=>'required|max:255',
             'slug'=>'required|max:255|unique:translators,slug,'.$this->id,
             'status'=>'required',
-            "id_user" =>"required"
         ];
     }
     public function messages()
@@ -39,7 +38,6 @@ class UpdateTranslatorRequest extends FormRequest
             'slug.required' => 'Slug không được bỏ trống',
             'slug.unique' => 'Slug không được trùng',
             'status.required' => 'Trạng thái không được bỏ trống',
-            'id_user.required' => 'user thêm không được bỏ trống',
         ];
     }
 }

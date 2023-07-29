@@ -18,4 +18,10 @@ class Translator extends Model
         // hasMany(RelatedModel, foreignKeyOnRelatedModel = tacgia_id, localKey = id)
         return $this->hasMany(Truyen::class,'id_trans','id');
     }
+
+    public function getUserAdd()
+        {
+            return $this->hasOne(User::class, 'id', 'id_user');
+        }
+    
 }

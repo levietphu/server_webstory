@@ -25,7 +25,7 @@ class UpdateTheloaiRequest extends FormRequest
     {
         return [
             'name'=>'required|max:255',
-            'slug'=>'required|max:255|unique:translators,slug,'.$this->id,
+            'slug'=>'required|max:255|unique:theloais,slug,'.$this->id,
             'status'=>'required',
         ];
     }

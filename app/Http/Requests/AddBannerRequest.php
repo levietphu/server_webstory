@@ -25,7 +25,7 @@ class AddBannerRequest extends FormRequest
     {
         return [
             'name'=>'required|max:255',
-            'image' => 'required|dimensions:min_width=1300,min_height=450||mimes:jpeg,bmp,png,jpg',
+            'image' => 'required',
             "status" => "required",
             "id_truyen" => "required",
         ];
@@ -36,8 +36,7 @@ class AddBannerRequest extends FormRequest
            'name.required' => 'Tên Banner không được bỏ trống',
            'name.max' => 'Tên Banner không vượt quá 255 ký tự',
            'image.required' => 'Ảnh không được bỏ trống',
-           'image.dimensions' => 'Ảnh có độ phân giải là 1300 x 450 pixels',
-           'image.mimes' => 'Ảnh phải có định dạng jpeg,bmp,png,jpg',
+
            "status.required" => "Trạng thái không được bỏ trống",
            "id_truyen.required" => "Truyện không được bỏ trống"
         ];

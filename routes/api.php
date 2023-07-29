@@ -36,46 +36,39 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	//tác giả
 	Route::get('author/index','AuthorApi@index');
 	Route::post('author/create','AuthorApi@create');
-	Route::get('author/{author}/edit','AuthorApi@edit');
 	Route::put('author/{author}/update','AuthorApi@update');
 	Route::delete('author/{author}/delete','AuthorApi@delete');
 
 	//thể loại
 	Route::get('cate/index','CategoryApi@index');
 	Route::post('cate/create','CategoryApi@create');
-	Route::get('cate/{cate}/edit','CategoryApi@edit');
 	Route::put('cate/{cate}/update','CategoryApi@update');
 	Route::delete('cate/{cate}/delete','CategoryApi@delete');
 
 	//Banner
 	Route::get('banner/index','BannerApi@index');
-	Route::get('banner/create','BannerApi@create');
-	Route::post('banner/store','BannerApi@store');
-	Route::get('banner/{banner}/edit','BannerApi@edit');
+	Route::post('banner/create','BannerApi@create');
 	Route::put('banner/{banner}/update','BannerApi@update');
 	Route::delete('banner/{banner}/delete','BannerApi@delete');
+	Route::post('upload_banner','BannerApi@uploadBanner');
 
 	//Config
 		//logo
 		Route::get('logo/index','LogoApi@index');
 		Route::post('logo/create','LogoApi@create');
-		Route::get('logo/{logo}/edit','LogoApi@edit');
 		Route::put('logo/{logo}/update','LogoApi@update');
 		Route::post('logo/{logo}/hidden','LogoApi@hidden');
+		Route::post('upload_logo', "LogoApi@uploadLogo");
 
 		//ads
 		Route::get('ads/index','AdsApi@index');
 		Route::post('ads/create','AdsApi@create');
-		Route::get('ads/{ads}/edit','AdsApi@edit');
 		Route::put('ads/{ads}/update','AdsApi@update');
 		Route::post('ads/{ads}/hidden','AdsApi@hidden');
 
 		//contact
 		Route::get('contact/index','ContactApi@index');
-		Route::post('contact/create','ContactApi@create');
-		Route::get('contact/{contact}/edit','ContactApi@edit');
 		Route::put('contact/{contact}/update','ContactApi@update');
-		Route::post('contact/{contact}/hidden','ContactApi@hidden');
 
 	//Permission
 	Route::get('permission/index','PermissionApi@index');

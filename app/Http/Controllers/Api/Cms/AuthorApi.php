@@ -39,7 +39,7 @@ class AuthorApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới tác giả thành công"
+            "message" =>"Thêm mới tác giả thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -52,15 +52,7 @@ class AuthorApi extends Controller
         }
     	
     }
-    public function edit($id)
-    {
-        $author = Tacgia::find($id);
-        return [
-            "success" => true,
-            "status" => 200,
-            "author" => $author
-        ];
-    }
+
     public function update(UpdateTacgiaRequest $req,$id)
     {
         try{
@@ -74,7 +66,7 @@ class AuthorApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật tác giả thành công"
+            "message" =>"Cập nhật tác giả thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -93,7 +85,7 @@ class AuthorApi extends Controller
         return [
             "success" => true,
             "status" => 200,
-            "messsage" => "Xóa tác giả thành công"
+            "message" => "Xóa tác giả thành công"
         ];
     }
 }

@@ -19,7 +19,7 @@ class AdsApi extends Controller
      */
     public function index()
     {
-        $ads = Config::where('type',2)->orderby("created_at","desc")->get();
+        $ads = Config::where('type',2)->orderby("created_at","desc")->where('status',1)->get();
         return [
         	"success" => true,
         	"status" => 200,
@@ -42,7 +42,7 @@ class AdsApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới quảng cáo thành công"
+            "message" =>"Thêm mới quảng cáo thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -55,15 +55,7 @@ class AdsApi extends Controller
         }
     	
     }
-    public function edit($id)
-    {
-        $ads = Config::find($id);
-        return [
-            "success" => true,
-            "status" => 200,
-            "ads" => $ads
-        ];
-    }
+
     public function update(UpdateAdsRequest $req,$id)
     {
         try{
@@ -79,7 +71,7 @@ class AdsApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật quảng cáo thành công"
+            "message" =>"Cập nhật quảng cáo thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -92,7 +84,7 @@ class AdsApi extends Controller
         }
         
     }
-    public function hidden($id)
+    public function delete($id)
     {
         $ads = Config::find($id);
         $ads->status=0;
@@ -100,7 +92,7 @@ class AdsApi extends Controller
         return [
             "success" => true,
             "status" => 200,
-            "messsage" => "Ẩn quảng cáo thành công"
+            "message" => "Ẩn quảng cáo thành công"
         ];
     }
 }

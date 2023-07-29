@@ -19,51 +19,24 @@ class ContactApi extends Controller
      */
     public function index()
     {
-        $contact = Config::where('type',3)->orderby("created_at","desc")->get();
+        $address = Config::where('slug', 'address')->where('type',3)->first();
+        $map = Config::where('slug', 'map')->where('type',3)->first();
+        $phone = Config::where('slug', 'phone')->where('type',3)->first();
+        $worktime = Config::where('slug', 'work-time')->where('type',3)->first();
+        $email =Config::where('slug', 'email')->where('type',3)->first();
+        $contact = [];
+        $contact["address"] = $address;
+        $contact["map"] = $map;
+        $contact["phone"] = $phone;
+        $contact["worktime"] = $worktime;
+        $contact["email"] = $email;
         return [
         	"success" => true,
         	"status" => 200,
         	"contact" => $contact
         ];
     }
-    public function create(AddContactRequest $req)
-    {
 
-        try{
-            DB::beginTransaction();
-            $logo = new Config;
-            $logo->name= $req->name;
-            $logo->slug= $req->slug;
-            $logo->type= 3;
-            $logo->value= $req->value;
-            $logo->status= $req->status;
-            $logo->save();
-            DB::commit();
-            return [
-            "success" => true,
-            "status" => 200,
-            "messsage" =>"Thêm mới liên lạc thành công"
-        ];
-        }catch(\Exception $exception){
-            DB::rollback();
-            Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return [
-                "success" => false,
-                "status" => 400,
-                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
-            ];
-        }
-    	
-    }
-    public function edit($id)
-    {
-        $contact = Config::find($id);
-        return [
-            "success" => true,
-            "status" => 200,
-            "contact" => $contact
-        ];
-    }
     public function update(UpdateContactRequest $req,$id)
     {
         try{
@@ -79,7 +52,7 @@ class ContactApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật liên lạc thành công"
+            "message" =>"Cập nhật liên lạc thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -92,15 +65,5 @@ class ContactApi extends Controller
         }
         
     }
-    public function hidden($id)
-    {
-        $contact = Config::find($id);
-        $contact->status=0;
-        $contact->save();
-        return [
-            "success" => true,
-            "status" => 200,
-            "messsage" => "Ẩn liên lạc thành công"
-        ];
-    }
+   
 }

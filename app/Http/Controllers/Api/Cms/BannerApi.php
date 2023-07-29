@@ -22,35 +22,31 @@ class BannerApi extends Controller
     public function index()
     {
         $banner = Banner::orderby("created_at","desc")->get();
-        return [
-            "success" => true,
-            "status" => 200,
-            "banner" => $banner
-        ];
-    }
-
-    public function create()
-    {
         $story = Truyen::select("id",'name')->get();
         return [
             "success" => true,
             "status" => 200,
+            "banner" => $banner,
             "story" => $story
         ];
     }
 
-    public function store(AddBannerRequest $req)
+
+    public function uploadBanner(Request $req)
     {
         $image = $req->file('image')->getClientOriginalName();  
 
         //upload ảnh lên thư mục      
         $req->file('image')->move('public/uploads/Banner/', $image);
+    }
 
+    public function create(AddBannerRequest $req)
+    {
         try{
             DB::beginTransaction();
             $banner = new Banner;
             $banner->name= $req->name;
-            $banner->image= "Banner/".$image;
+            $banner->image= "Banner/".$req->image['file']['name'];
             $banner->status= $req->status;
             $banner->id_truyen= $req->id_truyen;
             $banner->save();
@@ -58,7 +54,7 @@ class BannerApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới banner thành công"
+            "message" =>"Thêm mới banner thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -71,28 +67,20 @@ class BannerApi extends Controller
         }
         
     }
-    public function edit($id)
-    {
-        $banner = Banner::find($id);
-        $story = Truyen::select("id",'name')->get();
-        return [
-            "success" => true,
-            "status" => 200,
-            "banner" => $banner,
-            "story" =>$story
-        ];
-    }
+
     public function update(AddBannerRequest $req,$id)
     {
-        $banner = Banner::find($id);
-        $image = $req->file('image')->getClientOriginalName();  
 
-        //upload ảnh lên thư mục      
-        $req->file('image')->move('public/uploads/Banner/', $image);
+        if(gettype($req->image)=="string"){
+            $image=$req->image;
+        }else{
+            $image = "Banner/".$req->image['file']['name'];
+        }
         try{
             DB::beginTransaction();
+            $banner = Banner::find($id);
             $banner->name= $req->name;
-            $banner->image= "Banner/".$image;
+            $banner->image=$image;
             $banner->status= $req->status;
             $banner->id_truyen= $req->id_truyen;
             $banner->save();
@@ -100,7 +88,7 @@ class BannerApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật banner thành công"
+            "message" =>"Cập nhật banner thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -119,7 +107,7 @@ class BannerApi extends Controller
         return [
             "success" => true,
             "status" => 200,
-            "messsage" => "Xóa banner thành công"
+            "message" => "Xóa banner thành công"
         ];
     }
 }

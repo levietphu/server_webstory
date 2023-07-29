@@ -19,33 +19,35 @@ class LogoApi extends Controller
      */
     public function index()
     {
-        $logo = Config::where('type',1)->orderby("created_at","desc")->get();
+        $logo = Config::where('type',1)->orderby("created_at","desc")->where('status',1)->get();
         return [
         	"success" => true,
         	"status" => 200,
         	"logo" => $logo
         ];
     }
-    public function create(AddLogoRequest $req)
-    {
-         $value = $req->file('value')->getClientOriginalName();  
+    public function uploadLogo(Request $req){
+        $value = $req->file('value')->getClientOriginalName();  
 
         //upload ảnh lên thư mục      
         $req->file('value')->move('public/uploads/Config/', $value);
+    }
+    public function create(AddLogoRequest $req)
+    {
         try{
             DB::beginTransaction();
             $logo = new Config;
             $logo->name= $req->name;
             $logo->slug= $req->slug;
             $logo->type= 1;
-            $logo->value= "Config/".$value;
+            $logo->value= $req->value['file']['name'];
             $logo->status= $req->status;
             $logo->save();
             DB::commit();
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới Logo thành công"
+            "message" =>"Thêm mới Logo thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -58,27 +60,21 @@ class LogoApi extends Controller
         }
     	
     }
-    public function edit($id)
-    {
-        $logo = Config::find($id);
-        return [
-            "success" => true,
-            "status" => 200,
-            "logo" => $logo
-        ];
-    }
+
     public function update(UpdateLogoRequest $req,$id)
     {
-        $value = $req->file('value')->getClientOriginalName();  
+        if(gettype($req->value)=="string"){
+            $value=$req->value;
+        }else{
 
-        //upload ảnh lên thư mục      
-        $req->file('value')->move('public/uploads/Config/', $value);
+        $value = $req->value['file']['name'];
+        }
         try{
             DB::beginTransaction();
             $logo = Config::find($id);
             $logo->name= $req->name;
             $logo->slug= $req->slug;
-            $logo->value= "Config/".$value;
+            $logo->value= $value;
             $logo->type= 1;
             $logo->status= $req->status;
             $logo->save();
@@ -86,7 +82,7 @@ class LogoApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật logo thành công"
+            "message" =>"Cập nhật logo thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -107,7 +103,7 @@ class LogoApi extends Controller
         return [
             "success" => true,
             "status" => 200,
-            "messsage" => "Ẩn logo thành công"
+            "message" => "Ẩn logo thành công"
         ];
     }
 }

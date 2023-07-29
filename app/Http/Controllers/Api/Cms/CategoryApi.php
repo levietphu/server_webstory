@@ -52,15 +52,7 @@ class CategoryApi extends Controller
         }
         
     }
-    public function edit($id)
-    {
-        $cate = Theloai::find($id);
-        return [
-            "success" => true,
-            "status" => 200,
-            "cate" => $cate
-        ];
-    }
+
     public function update(UpdateTheloaiRequest $req,$id)
     {
         try{
