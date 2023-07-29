@@ -70,15 +70,17 @@ class BannerApi extends Controller
 
     public function update(AddBannerRequest $req,$id)
     {
-
+        $banner = Banner::find($id);
         if(gettype($req->image)=="string"){
             $image=$req->image;
         }else{
+            unlink(public_path(
+                "/uploads/".$banner->image));
             $image = "Banner/".$req->image['file']['name'];
         }
         try{
             DB::beginTransaction();
-            $banner = Banner::find($id);
+            
             $banner->name= $req->name;
             $banner->image=$image;
             $banner->status= $req->status;

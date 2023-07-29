@@ -31,6 +31,8 @@ class LogoApi extends Controller
 
         //upload ảnh lên thư mục      
         $req->file('value')->move('public/uploads/Config/', $value);
+
+        
     }
     public function create(AddLogoRequest $req)
     {
@@ -63,15 +65,16 @@ class LogoApi extends Controller
 
     public function update(UpdateLogoRequest $req,$id)
     {
+        $logo = Config::find($id);
         if(gettype($req->value)=="string"){
             $value=$req->value;
         }else{
-
-        $value = $req->value['file']['name'];
+            unlink(public_path(
+                "/uploads/Config/".$logo->value));
+            $value = $req->value['file']['name'];
         }
         try{
             DB::beginTransaction();
-            $logo = Config::find($id);
             $logo->name= $req->name;
             $logo->slug= $req->slug;
             $logo->value= $value;
