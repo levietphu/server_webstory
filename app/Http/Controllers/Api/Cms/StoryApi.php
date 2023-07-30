@@ -24,10 +24,11 @@ class StoryApi extends Controller
      */
     public function index()
     {
-        $check = Truyen::orderby('created_at','desc')->select('id','name','full','vip','status')->get();
+        $check = Truyen::orderby('created_at','desc')->get();
         $story = json_decode(json_encode($check));
         foreach ($check as $key => $value) {
             $story[$key]->all_chapter = $value->chuong->count();
+            $story[$key]->name_user = $value->getUserStory->name;
         }
         return [
             "success"=>true,
@@ -43,16 +44,29 @@ class StoryApi extends Controller
      */
     public function create()
     {
-        $tacgia = Tacgia::all();
-        $dichgia = Translator::all();
-        $theloai = Theloai::orderby('created_at','desc')->get();
+        $author = Tacgia::all();
+        $trans = Translator::all();
+        $cate = Theloai::all();
         return [
             "success"=>true,
             "status"=>200,
-            'author'=>$tacgia,
-            'translator'=>$dichgia,
-            'cate'=>$theloai,
+            'author'=>$author,
+            'trans'=>$trans,
+            'cate'=>$cate,
         ];
+    }
+
+    public function upload(Request $req,$id)
+    {
+        if($id){
+            $story = Truyen::find($id);
+            unlink(public_path(
+                "/uploads/".$story->image));
+        }
+        $image = $req->file('image')->getClientOriginalName();  
+
+        //upload ảnh lên thư mục      
+        $req->file('image')->move('public/uploads/Truyện/', $image);
     }
 
     /**
@@ -63,19 +77,16 @@ class StoryApi extends Controller
      */
     public function store(AddTruyenRequest $req)
     {
-         $image = $req->file('image')->getClientOriginalName();  
-
-        //upload ảnh lên thư mục      
-        $req->file('image')->move('public/uploads/Truyện/', $image);
+         
         try{
             DB::beginTransaction();
             $truyen = new Truyen;
-            $truyen->id_tacgia = $req->id_author;
+            $truyen->id_tacgia = $req->id_tacgia;
             $truyen->id_trans = $req->id_trans;
             $truyen->name= $req->name;
             $truyen->slug= $req->slug;
             $truyen->introduce= $req->introduce;
-            $truyen->image= 'Truyện/'.$image;
+            $truyen->image= 'Truyện/'.$req->image['file']['name'];
             $truyen->discount= $req->discount;
             $truyen->recommended= $req->recommended;
             $truyen->status= $req->status;
@@ -90,7 +101,7 @@ class StoryApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới truyện thành công"
+            "message" =>"Thêm mới truyện thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -126,14 +137,19 @@ class StoryApi extends Controller
         $dichgia = Translator::all();
         $theloai = Theloai::orderby('created_at','desc')->get();
         $edit = Truyen::find($id);
-        $edit['author'] = $tacgia;
-        $edit['trans'] = $dichgia;
-        $edit['cate'] = $theloai;
-        $edit['user']=User::find($edit->id_user);
+        $check = $edit->truyen()->select("theloais.id")->get();
+        $id_cate =[];
+        foreach ($check as $key => $value) {
+            $id_cate[$key] = $value->id;
+        }
         return [
             "success" => true,
             "status" => 200,
-            "edit" =>"$edit"
+            "edit" =>$edit,
+            "authors" =>$tacgia,
+            "trans" =>$dichgia,
+            "cates" =>$theloai,
+            "id_cate" =>$id_cate,
         ];
     }
 
@@ -146,14 +162,16 @@ class StoryApi extends Controller
      */
     public function update(UpdateTruyenRequest $req, $id)
     {
-        $image = $req->file('image')->getClientOriginalName();  
+        if(gettype($req->image )== "string"){
+            $image= $req->image;
+        }else{
+            $image = 'Truyện/'.$req->image['file']['name'];
+        }
 
-        //upload ảnh lên thư mục      
-        $req->file('image')->move('public/uploads/Truyện/', $image);
         try{
             DB::beginTransaction();
             $truyen = Truyen::find($id);
-            $truyen->id_tacgia = $req->id_author;
+            $truyen->id_tacgia = $req->id_tacgia;
             $truyen->id_trans = $req->id_trans;
             $truyen->name= $req->name;
             $truyen->slug= $req->slug;
@@ -173,7 +191,7 @@ class StoryApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật truyện thành công"
+            "message" =>"Cập nhật truyện thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -198,7 +216,7 @@ class StoryApi extends Controller
         return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Xóa truyện thành công"
+            "message" =>"Xóa truyện thành công"
         ];
     }
 }

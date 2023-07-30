@@ -32,8 +32,13 @@ class BannerApi extends Controller
     }
 
 
-    public function uploadBanner(Request $req)
+    public function uploadBanner(Request $req,$id)
     {
+        if($id){
+            $banner = Banner::find($id);
+            unlink(public_path(
+                "/uploads/".$banner->image));
+        }
         $image = $req->file('image')->getClientOriginalName();  
 
         //upload ảnh lên thư mục      
@@ -74,8 +79,7 @@ class BannerApi extends Controller
         if(gettype($req->image)=="string"){
             $image=$req->image;
         }else{
-            unlink(public_path(
-                "/uploads/".$banner->image));
+            
             $image = "Banner/".$req->image['file']['name'];
         }
         try{

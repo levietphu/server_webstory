@@ -50,7 +50,7 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	Route::post('banner/create','BannerApi@create');
 	Route::put('banner/{banner}/update','BannerApi@update');
 	Route::delete('banner/{banner}/delete','BannerApi@delete');
-	Route::post('upload_banner','BannerApi@uploadBanner');
+	Route::post('upload_banner/{id}','BannerApi@uploadBanner');
 
 	//Config
 		//logo
@@ -58,7 +58,7 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 		Route::post('logo/create','LogoApi@create');
 		Route::put('logo/{logo}/update','LogoApi@update');
 		Route::post('logo/{logo}/hidden','LogoApi@hidden');
-		Route::post('upload_logo', "LogoApi@uploadLogo");
+		Route::post('upload_logo/{id}', "LogoApi@uploadLogo");
 
 		//ads
 		Route::get('ads/index','AdsApi@index');
@@ -104,12 +104,12 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	Route::post('story/store','StoryApi@store');
 	Route::get('story/{story}/edit','StoryApi@edit');
 	Route::put('story/{story}/update','StoryApi@update');
-	Route::delete('story/{story}/delete','StoryApi@delete');
+	Route::delete('story/{story}/delete','StoryApi@destroy');
+	Route::post('upload_story/{id}', "StoryApi@upload");
 
 	//Chapter
-	Route::get('chapter/{id_story}','ChapterApi@index');
-	Route::post('chapter/{id_story}/store','ChapterApi@store');
-	Route::get('chapter/{id_story}/edit/{id_chapter}','ChapterApi@edit');
+	Route::get('chapter/{id_story}/index','ChapterApi@index');
+	Route::post('chapter/{id_story}/create','ChapterApi@create');
 	Route::put('chapter/{id_story}/update/{id_chapter}','ChapterApi@update');
-	Route::delete('chapter/{id_story}/delete/{id_chapter}','ChapterApi@delete');
+	Route::delete('chapter/{id}/delete/','ChapterApi@destroy');
 });

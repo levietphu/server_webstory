@@ -26,7 +26,12 @@ class LogoApi extends Controller
         	"logo" => $logo
         ];
     }
-    public function uploadLogo(Request $req){
+    public function uploadLogo(Request $req,$id){
+        if($id){
+            $logo = Config::find($id);
+            unlink(public_path(
+                "/uploads/Config/".$logo->value));
+        }
         $value = $req->file('value')->getClientOriginalName();  
 
         //upload ảnh lên thư mục      
@@ -69,8 +74,7 @@ class LogoApi extends Controller
         if(gettype($req->value)=="string"){
             $value=$req->value;
         }else{
-            unlink(public_path(
-                "/uploads/Config/".$logo->value));
+            
             $value = $req->value['file']['name'];
         }
         try{

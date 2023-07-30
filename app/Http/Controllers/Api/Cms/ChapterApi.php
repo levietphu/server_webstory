@@ -20,12 +20,13 @@ class ChapterApi extends Controller
      */
     public function index($id_story)
     {
-        $chapter = Chuongtruyen::orderby('created_at','desc')->where('id_truyen',$id_story)->select('name_chapter','chapter_number','coin')->get();
-        $chapter['name_story'] = Truyen::find($id_story)->name;
+        $chapter = Chuongtruyen::orderby('created_at','desc')->where('id_truyen',$id_story)->get();
+        $name_story = Truyen::find($id_story)->name;
         return [
             "success"=>true,
             "status"=>200,
-            'chapter'=>$chapter
+            'chapter'=>$chapter,
+            "name_story"=>$name_story
         ];
     }
 
@@ -36,18 +37,17 @@ class ChapterApi extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(AddChuongtruyenRequest $req,$id_story)
+    public function create(AddChuongtruyenRequest $req,$id_story)
     {
         try{
             DB::beginTransaction();
-
             $chapter = new Chuongtruyen;
             $chapter->id_truyen=$id_story;
             $chapter->name_chapter= $req->name_chapter;
             $chapter->chapter_number= $req->chapter_number;
             $chapter->slug= $req->slug;
             $chapter->content= $req->content;
-            $chapter->coin= $req->coin;
+            $chapter->coin= $req->coin ? $req->coin:0;
             $chapter->save();
             DB::commit();
             return [
@@ -77,21 +77,6 @@ class ChapterApi extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id_story,$id_chapter)
-    {
-        $edit = Chuongtruyen::find($id_chapter);
-        return [
-            "success"=>true,
-            "status"=>200,
-            'edit'=>$edit
-        ];
-    }
 
     /**
      * Update the specified resource in storage.
@@ -110,13 +95,13 @@ class ChapterApi extends Controller
             $chapter->chapter_number= $req->chapter_number;
             $chapter->slug= $req->slug;
             $chapter->content= $req->content;
-            $chapter->coin= $req->coin;
+            $chapter->coin= $req->coin ? $req->coin:0;
             $chapter->save();
             DB::commit();
             return [
             "success"=>true,
             "status"=>200,
-            'message'=>"Cập nhật chương mới thành công"
+            'message'=>"Cập nhật chương thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -138,6 +123,10 @@ class ChapterApi extends Controller
     public function destroy($id)
     {
         Chuongtruyen::find($id)->delete();
-        return redirect()->back()->with('success','Xóa chương thành công');
+        return [
+            "success"=>false,
+            "status"=>200,
+            'message'=>'Xóa chương thành công'
+        ];
     }
 }

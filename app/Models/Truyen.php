@@ -44,4 +44,9 @@ class Truyen extends Model
         return $this->belongsToMany(Visitor::class, 'views', 'id_truyen', 'id_visit');
     }
 
+    public function getUserStory()
+    {
+        return $this->hasOne(User::class,"id","id_user");
+    }
+
 }
