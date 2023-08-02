@@ -24,24 +24,22 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'email'=>'required',
-            'name'=>'required|min:5|max:20',
+            'email'=>'required|max:255|unique:users',
+            'name'=>'required|min:5|max:20|unique:users',
             'password' => 'required|min:8',
-            'repassword' => 'required_with:password|same:password|min:8'
         ];
     }
     public function messages()
     {
         return [
-           'email.required' => 'Tài khoản email không được bỏ trống',
-           'email.max' => 'Tài khoản email không được quá 255 ký tự',
+           'email.required' => 'Email không được bỏ trống',
+           'email.max' => 'Email không được quá 255 ký tự',
+           'email.unique' => 'email đã tồn tại',
            'name.required' => 'Tên người dùng không được bỏ trống',
            'name.max' => 'Tên người dùng không được quá 255 ký tự',
+           'email.unique' => 'Tên người dùng đã tồn tại',
            'password.required' => 'Mật khẩu không được bỏ trống',
            'password.min' => 'Mật khẩu không được ít hơn 8 ký tự',
-           'repassword.required_with' => 'Không được bỏ trống',
-           'repassword.same' => 'Phải trùng mật khẩu',
-           'repassword.min' => 'Không được ít hơn 8 ký tự',
         ];
     }
 }

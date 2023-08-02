@@ -71,19 +71,13 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 		Route::put('contact/{contact}/update','ContactApi@update');
 
 	//Permission
-	Route::get('permission/index','PermissionApi@index');
 	Route::post('permission/create','PermissionApi@create');
-	Route::get('permission/{permission}/edit','PermissionApi@edit');
-	Route::put('permission/{permission}/update','PermissionApi@update');
-	Route::delete('permission/{permission}/delete','PermissionApi@delete');
 
 	//Role
 	Route::get('role/index','RoleApi@index');
-	Route::get('role/create','RoleApi@create');
-	Route::post('role/store','RoleApi@store');
-	Route::get('role/{role}/edit','RoleApi@edit');
+	Route::post('role/create','RoleApi@create');
 	Route::put('role/{role}/update','RoleApi@update');
-	Route::post('role/{role}/hidden','RoleApi@hidden');
+	Route::delete('role/{role}/delete','RoleApi@delete');
 
 	//Translator
 	Route::get('trans/index','TranslatorApi@index');
@@ -94,9 +88,9 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 
 	//User
 	Route::get('user/index','UserApi@index');
-	Route::post('user/{user}/add_role','UserApi@add_role');
-	Route::put('user/{user}/update','UserApi@update');
-	Route::post('user/{user}/hidden','UserApi@hidden');
+	Route::post('user/{user}/update_role','UserApi@update_role');
+	Route::post('user/{user}/block','UserApi@block');
+	Route::post('user/{user}/add_coin','UserApi@add_coin');
 
 	//Story
 	Route::get('story/index','StoryApi@index');

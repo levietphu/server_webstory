@@ -26,6 +26,7 @@ class AddRoleRequest extends FormRequest
         return [
             'name'=>'required|max:255',
             'status'=>'required',
+            "id_per" => "required"
         ];
     }
     public function messages()
@@ -34,6 +35,7 @@ class AddRoleRequest extends FormRequest
            'name.required' => 'Tên vai trò không được bỏ trống',
            'name.max' => 'Tên vai trò không được quá 255 ký tự',
             'status.required' => 'Trạng thái không được bỏ trống',
+            'id_per.required' => 'Quyền không được bỏ trống',
         ];
     }
 }

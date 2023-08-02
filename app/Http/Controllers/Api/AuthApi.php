@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Users_chuongtruyen;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 use Hash;
 use Str;
 use DB;
@@ -17,30 +19,8 @@ class AuthApi extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function register(Request $req)
+    public function register(RegisterRequest $req)
     {
-        $name = $req->name;
-        $email = $req->email;
-        $password = $req->password;
-
-        $user = User::where('email',$email)->first();
-
-        if($user){
-            return [
-                'success'=>false,
-                'status'=>401,
-                'data' => ['hasMore' => 'Người dùng đã tồn tại']
-            ];
-        }
-        if(strlen ($password)<8){
-return [
-                'success'=>false,
-                'status'=>401,
-                'data' => ['hasMore' => 'Mật khẩu ít hơn 8 ký tự']
-            ];
-        }
-    
-
         $newUser = new User;
         $newUser->email = $req->email;
         $newUser->name = $req->name;
@@ -50,31 +30,26 @@ return [
        
         return ['success'=>true,
         'status'=>200,
-        'data' => ['result'=>'Đăng ký thành công','token'=>$newUser->remember_token]
+        'data' => ['result'=>'Đăng ký thành công']
         ];
     }
 
-    public function login(Request $req)
+    public function login(LoginRequest $req)
     {
         $email = $req->email;
         $password = $req->password;
-
-        $user = User::where('email',$email)->first();
+        if(str_contains($email, "@")){
+            $user = User::where('email',$email)->first();
+        }else{
+            $user = User::where("name",$email)->first();
+        }
 
         if(!$user){
-            return [
-                'success'=>false,
-                'status'=>401,
-                'data' => ['hasMore' => 'Email or password wrong']
-            ];
+            return abort(400,"Thông tin đang nhập không chính xác");
         }
 
         if (!Hash::check($password, $user->password)) {
-            return [
-                'success'=>false,
-                'status'=>401,
-                'data' => ['hasMore' => 'Email or password wrong']
-            ];
+            return abort(400,'Mật khẩu không đúng');
         }
 
         return [
@@ -89,12 +64,18 @@ return [
     {
 
         $token = is_null($req->bearerToken()) ? $req->token:$req->bearerToken();
-
        $user = User::where('remember_token', $token)->select('id','name','email','coin')->first() ;
 
         if(!$user){
             return abort(401);
         }
+
+        $check = $user->getRole()->select("roles.name","roles.id")->get();
+        $role = json_decode(json_encode($check));
+        foreach ($check as $key => $value) {
+            $role[$key]->per=$value->getPer()->select("permissions.slug")->get();
+        }
+
         $user_chapter = Users_chuongtruyen::where('id_user',$user->id)->orderby('created_at','desc')->get()->unique('id_truyen');
 
         $bookcase = json_decode(json_encode($user_chapter),true);
@@ -116,7 +97,8 @@ return [
            'items'=>[
             'user'=>$user,
             'bookcase'=>$bookcase,
-            'vipbuy'=>$vipbuy
+            'vipbuy'=>$vipbuy,
+            'role'=>$role
            ]
         ]
             

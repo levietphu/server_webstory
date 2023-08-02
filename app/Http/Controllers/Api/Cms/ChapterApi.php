@@ -53,7 +53,7 @@ class ChapterApi extends Controller
             return [
             "success"=>true,
             "status"=>200,
-            'message'=>"Thêm chuong mới thành công"
+            'message'=>"Thêm chương mới thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();

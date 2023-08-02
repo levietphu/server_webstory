@@ -19,51 +19,31 @@ class UserApi extends Controller
     public function index()
     {
         $check = User::all();
-        foreach ($check as $value) {
-            $user[$value->name] = $value->getRole()->get();
+        $user = json_decode(json_encode($check));
+        foreach ($check as $key => $value) {
+            $user[$key]->role = $value->getRole()->select('roles.id','roles.name','roles.status')->get();
         }
-        $user->role = Role::get();
+        $role = Role::all();
         return [
         	"success" => true,
         	"status" => 200,
-        	"user" => $user
+        	"user" => $user,
+            "role" => $role,
         ];
     }
 
-    public function add_role(Request $req)
+  
+    public function update_role(Request $req,$id)
     {
         try{
             DB::beginTransaction();
-            $user = User::find($req->id);
-            $user->getRole()->attach($req->id_role);
+            $user = User::find($id);
+            $user->getRole()->sync($req->id_role);
             DB::commit();
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm vai trò cho user thành công"
-        ];
-        }catch(\Exception $exception){
-            DB::rollback();
-            Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return [
-                "success" => false,
-                "status" => 400,
-                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
-            ];
-        }
-    	
-    }
-    public function update(Request $req)
-    {
-        try{
-            DB::beginTransaction();
-            $user = User::find($req->id);
-            $user->getRole()->sync($req->id_per);
-            DB::commit();
-            return [
-            "success" => true,
-            "status" => 200,
-            "messsage" =>"Cập nhật vai trò cho user thành công"
+            "message" =>"Cập nhật vai trò cho user thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -76,16 +56,54 @@ class UserApi extends Controller
         }
         
     }
-    public function hidden(Request $req)
+
+public function add_coin(Request $req,$id)
     {
-        $user = User::find($req->id);
-        $user->status=0;
-        $user->save();
-        return [
-            'success' => true,
-            "status"=>200,
-            "message"=>"User bị cấm hoạt động thành công"
+        try{
+            DB::beginTransaction();
+            $user = User::find($id);
+            $user->coin = $user->coin + $req->coin;
+            $user->save();
+            DB::commit();
+            return [
+            "success" => true,
+            "status" => 200,
+            "message" =>"Thêm xu thành công"
         ];
+        }catch(\Exception $exception){
+            DB::rollback();
+            Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+            return [
+                "success" => false,
+                "status" => 400,
+                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
+            ];
+        }
+        
+    }
+
+    public function block($id)
+    {
+        $user = User::find($id);
+        if ($user->status ==1) {
+            $user->status=0;
+            $user->save();
+            return [
+                'success' => true,
+                "status"=>200,
+                "message"=>"User bị cấm hoạt động thành công"
+            ];
+        }else{
+            $user->status=1;
+            $user->save();
+            return [
+                'success' => true,
+                "status"=>200,
+                "message"=>"User hoạt động trở lại"
+            ];
+        }
+        
+        
     }
     
 }

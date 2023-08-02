@@ -20,26 +20,21 @@ class RoleApi extends Controller
     public function index()
     {
         $check = Role::all();
+        $role = json_decode(json_encode($check));
         foreach ($check as $key => $value) {
-            $role[$value->name] = $value->getPer()->get()->count();
+            $role[$key]->role_per = $value->getPer()->select('permissions.id','permissions.name_per')->get();
         }
+        $per = Permission::all();
         return [
         	"success" => true,
         	"status" => 200,
-        	"role" => $role
+        	"role" => $role,
+            "per" => $per,
         ];
     }
 
-    public function create()
-    {
-        $permission = Permission::get();
-        return [
-            "success" => true,
-            "status"=>200,
-            "all_per" => $permission
-        ];
-    }
-    public function store(AddRoleRequest $req)
+
+    public function create(AddRoleRequest $req)
     {
         try{
             DB::beginTransaction();
@@ -53,7 +48,7 @@ class RoleApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Thêm mới vai trò thành công"
+            "message" =>"Thêm mới vai trò thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -66,18 +61,7 @@ class RoleApi extends Controller
         }
     	
     }
-    public function edit($id)
-    {
-        $role = Role::find($id);
-        $permission = Permission::get();
-        $role->view_per =  $role->getPer()->select("slug")->get();
-        $role->all_per = $permission;
-        return [
-            "success" => true,
-            "status" => 200,
-            "role" => $role,
-        ];
-    }
+
     public function update(AddRoleRequest $req,$id)
     {
         try{
@@ -91,7 +75,7 @@ class RoleApi extends Controller
             return [
             "success" => true,
             "status" => 200,
-            "messsage" =>"Cập nhật vai trò thành công"
+            "message" =>"Cập nhật vai trò thành công"
         ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -104,15 +88,14 @@ class RoleApi extends Controller
         }
         
     }
-    public function hidden($id)
+    public function delete($id)
     {
-        $role = Role::find($id)->delete();
-        $role->status=0;
-        $role->save();
+        DB::table("role_permission")->where("id_role",$id)->delete();
+        Role::find($id)->delete();
         return [
             "success" => true,
             "status" => 200,
-            "messsage" => "Ẩn vai trò thành công"
+            "message" => "Xóa vai trò thành công"
         ];
     }
 }
