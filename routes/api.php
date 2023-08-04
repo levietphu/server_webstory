@@ -30,6 +30,8 @@ Route::get('addview','Api\StoryApi@addViewCount');
 Route::get('view_chapter','Api\StoryApi@viewChapter');
 Route::get('buy_chapter','Api\StoryApi@buyChapter');
 Route::get('get_comment','Api\CommentApi@index');
+Route::get('get_chidren_comment','Api\CommentApi@children');
+Route::post('post_comment','Api\CommentApi@post_comment');
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {

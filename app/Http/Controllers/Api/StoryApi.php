@@ -33,32 +33,6 @@ class StoryApi extends Controller
         $truyen->dichgia = $afterView->dichgia;
         $truyen->chuongs = $afterView->chuong()->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->select('id','name_chapter','chapter_number','slug','coin','created_at')->paginate(20);
 
-        if($req->id_user){
-            if($req->content || $req->reply_content){
-                $comment = new Comment;
-                $comment ->id_user = $req->id_user;
-                $comment ->id_truyen = $afterView->id;
-                $comment ->content = is_null($req->content)?$req->reply_content:$req->content;
-                $comment ->id_parent = $req->id_parent;
-                $comment->save();
-            }
-        }
-
-        $check_comment = Comment::where("id_truyen",$afterView->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->get();
-        $comments_story = json_decode(json_encode($check_comment));
-
-        foreach ($check_comment as $key => $value) {
-            $comments_story[$key]->commet_childrens = $value->children_comment()->orderBy("created_at","desc")->where('status',1)->get();
-            $comments_story[$key]->user = $value->user_comment()->select("name")->first(); 
-
-            $check_comment = json_decode(json_encode($comments_story[$key]->commet_childrens));
-
-            foreach ($comments_story[$key]->commet_childrens as $index => $item) {
-                $comments_story[$key]->commet_childrens[$index]->user= $item->user_comment()->select("name")->first();
-            }
-        }
-        $truyen->comments_story = $comments_story;
-
         if(!$req->id_user){
             return ['success'=>true,
             'status'=>200,

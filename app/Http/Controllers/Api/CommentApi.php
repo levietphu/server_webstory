@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use App\Models\Truyen;
 use DB;
 
 class CommentApi extends Controller
@@ -16,24 +17,58 @@ class CommentApi extends Controller
      */
     public function index(Request $req)
     {
-        $check = Comment::where("id_truyen",$req->id_story)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->get();
-        $comments_story = json_decode(json_encode($check));
+        $story = Truyen::where("slug",$req->slug)->first();
 
-        foreach ($check as $key => $value) {
-            $comments_story[$key]->commet_childrens = $value->children_comment()->orderBy("created_at","desc")->get();
-            $comments_story[$key]->user = $value->user_comment()->select("name")->first(); 
+        // Hiển thị comment
+        $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->paginate(1);
+        $comments_story = json_decode(json_encode($check_comment));
+            
+        foreach ($check_comment as $key => $value) {
+            $comments_story->data[$key]->user = $value->user_comment()->select("id","name")->first();
+        }
+        
+        return [
+            "success"=>true,
+            "status"=>200,
+            "comments_story"=>$comments_story,
+        ];
+    }
 
-            $check = json_decode(json_encode($comments_story[$key]->commet_childrens));
+    public function children(Request $req)
+    {
+        $story = Truyen::where("slug",$req->slug)->first();
 
-            foreach ($comments_story[$key]->commet_childrens as $index => $item) {
-                $comments_story[$key]->commet_childrens[$index]->user= $item->user_comment()->select("name")->first();
+        $check_children= Comment::where("id_truyen",$story->id)->where('id_parent',"!=",0)->where('status',1)->get();
+        $children_comments = json_decode(json_encode($check_children));
+        foreach ($check_children as $key => $value) {
+            $children_comments[$key]->user=$value->user_comment()->select("id","name")->first();
+        }
+        return [
+            "success"=>true,
+            "status"=>200,
+            "children_comments"=>$children_comments,
+        ];
+    }
+
+    public function post_comment(Request $req)
+    {
+         $story = Truyen::where("slug",$req->slug)->first();
+        //post comment
+         if($req->id_user){
+            if($req->content || $req->reply_content){
+                $comment = new Comment;
+                $comment ->id_user = $req->id_user;
+                $comment ->id_truyen = $story->id;
+                $comment ->content = !$req->content?$req->reply_content:$req->content;
+                $comment ->id_parent = $req->id_parent;
+                $comment->save();
+
+
+                return abort(200,"Thêm comment thành công");
             }
         }
-        dd($comments_story);
-        return [
-            "success" => true,
-            "status" => 200,
-            "comments_story" => $comments_story
-        ];
+        return abort(400,"Không có user");
+
+
     }
 }

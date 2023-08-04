@@ -23,20 +23,12 @@ class MultiApi extends Controller
         $page = $req->page;
 
         if(!$slug){
-            return [
-                'success'=>false,
-                'status'=>401,
-                'data' => ['hasMore'=>"error missing request"]
-            ];
+            return rebort(400,"error missing request");
         }
 
         $cate = Theloai::where('slug',$slug)->first();
         if(!$cate){
-            return [
-                'success'=>false,
-                'status'=>404,
-                'data' => ['hasMore'=>"Not found"]
-            ];
+            return rebort(404,"Not found");
         }
 
         $check = Truyen::join('chuongtruyens','truyens.id','=','chuongtruyens.id_truyen')->join('theloai_truyens','theloai_truyens.id_truyen','=','truyens.id')->join('theloais','theloais.id','=','theloai_truyens.id_theloai')
