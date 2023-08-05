@@ -26,6 +26,7 @@ Route::post('register','Api\AuthApi@register');
 Route::post('login','Api\AuthApi@login');
 Route::get('getUser','Api\AuthApi@getUser');
 Route::get('get_story','Api\StoryApi@getStory');
+Route::get('get_chapter_story','Api\ChapterApi@getChapterStory');
 Route::get('addview','Api\StoryApi@addViewCount');
 Route::get('view_chapter','Api\StoryApi@viewChapter');
 Route::get('buy_chapter','Api\StoryApi@buyChapter');

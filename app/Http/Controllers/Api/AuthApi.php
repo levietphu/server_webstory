@@ -106,4 +106,18 @@ class AuthApi extends Controller
 
 
     }
+    public function add_coin(Request $req)
+    {
+        if($req->id_user){
+            $user = User::find($req->id_user);
+            $user->coin = $user->coin + $req->coin;
+            $user->save();
+            return [
+                "success"=>true,
+                "status"=>200,
+                "message"=>"Thêm coin cho user thành công"
+            ];
+        }
+        return abort(400);
+    }
 }

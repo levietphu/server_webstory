@@ -25,6 +25,7 @@ class CommentApi extends Controller
             
         foreach ($check_comment as $key => $value) {
             $comments_story->data[$key]->user = $value->user_comment()->select("id","name")->first();
+            $comments_story->data[$key]->user->roles = $comments_story->data[$key]->user->getRole()->select("roles.id","roles.name")->get();
         }
         
         return [
@@ -42,6 +43,7 @@ class CommentApi extends Controller
         $children_comments = json_decode(json_encode($check_children));
         foreach ($check_children as $key => $value) {
             $children_comments[$key]->user=$value->user_comment()->select("id","name")->first();
+            $children_comments[$key]->user->roles=$children_comments[$key]->user->getRole()->select("roles.id","roles.name")->get();
         }
         return [
             "success"=>true,

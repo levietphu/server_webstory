@@ -23,36 +23,21 @@ class StoryApi extends Controller
     public function getStory(Request $req)
     {
         $afterView = Truyen::where('slug',$req->slug)->first();
-        $keyword = $req->keyword;
-        $orderby = $req->orderby;
 
         $truyen = json_decode(json_encode($afterView));
 
         $truyen->theloais = $afterView->truyen;
         $truyen->tacgia = $afterView->tacgia;
         $truyen->dichgia = $afterView->dichgia;
-        $truyen->chuongs = $afterView->chuong()->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->select('id','name_chapter','chapter_number','slug','coin','created_at')->paginate(20);
+       
+        $truyen->rank = Truyen::orderby('view_count','desc')->where('vip',1)->where('status',1)->limit(3)->select("id")->get();
+        $truyen->total_chapter = $afterView->chuong()->count();
 
-        if(!$req->id_user){
             return ['success'=>true,
             'status'=>200,
             'data' => [
                 'items' => $truyen]
-            ];
-        }else{
-            $check = json_decode(json_encode($truyen->chuongs));
-            foreach ($truyen->chuongs as $key=> $value) {
-            $check->data[$key]->bought =$value->getChapterPersonal()->where("users_chuongtruyens.id_user",$req->id_user)->where("users_chuongtruyens.bought",1)->first();
-            }
-            $truyen->chuongs = $check;
-            return ['success'=>true,
-            'status'=>200,
-            'data' => [
-                'items' => $truyen]
-            ];
-
-        }
-        
+            ];        
     }
     public function addViewCount(Request $req)
     {
