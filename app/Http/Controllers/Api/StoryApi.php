@@ -31,6 +31,7 @@ class StoryApi extends Controller
         $truyen->dichgia = $afterView->dichgia;
        
         $truyen->rank = Truyen::orderby('view_count','desc')->where('vip',1)->where('status',1)->limit(3)->select("id")->get();
+        $truyen->chapter_one = Chuongtruyen::where("id_truyen",$afterView->id)->first();
         $truyen->total_chapter = $afterView->chuong()->count();
 
             return ['success'=>true,
@@ -42,6 +43,7 @@ class StoryApi extends Controller
     public function addViewCount(Request $req)
     {
         $truyen = Truyen::where("slug",$req->slug)->first();
+        
         event(new ViewCount($truyen));
         return [];
     }

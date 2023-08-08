@@ -51,6 +51,8 @@ class AuthApi extends Controller
         if (!Hash::check($password, $user->password)) {
             return abort(400,'Mật khẩu không đúng');
         }
+        $user->remember_token = Str::random(60);
+        $user->save();
 
         return [
                 'success'=>true,
@@ -64,7 +66,7 @@ class AuthApi extends Controller
     {
 
         $token = is_null($req->bearerToken()) ? $req->token:$req->bearerToken();
-       $user = User::where('remember_token', $token)->select('id','name','email','coin')->first() ;
+       $user = User::where('remember_token', $token)->select('id','name','email','coin')->first();
 
         if(!$user){
             return abort(401);
