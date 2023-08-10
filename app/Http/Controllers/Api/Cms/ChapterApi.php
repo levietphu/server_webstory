@@ -39,6 +39,10 @@ class ChapterApi extends Controller
      */
     public function create(AddChuongtruyenRequest $req,$id_story)
     {
+        if(count(explode(" ",$req->chapter_number))!=2 ||!(int)explode(" ",$req->chapter_number)[1]){
+             return abort(400, $message = "Số chương phải đúng định dạng chương + số chương");
+        }
+
         try{
             DB::beginTransaction();
             $chapter = new Chuongtruyen;
@@ -60,22 +64,12 @@ class ChapterApi extends Controller
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
             return [
             "success"=>false,
-            "status"=>400,
+            "status"=>500,
             'message'=>'message:'.$exception->getMessage().'Line'.$exception->getLine()
         ];
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
 
     /**
@@ -85,8 +79,12 @@ class ChapterApi extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(AddChuongtruyenRequest $req, $id_story,$id_chapter)
+    public function update(Request $req, $id_story,$id_chapter)
     {
+        if(count(explode(" ",$req->chapter_number)) != 2 || !(int)explode(" ",$req->chapter_number)[1]){
+            return abort(400, $message = "Số chương phải đúng định dạng chương + số chương");
+        }
+
         try{
             DB::beginTransaction();
             $chapter = Chuongtruyen::find($id_chapter);

@@ -33,6 +33,9 @@ Route::get('buy_chapter','Api\StoryApi@buyChapter');
 Route::get('get_comment','Api\CommentApi@index');
 Route::get('get_chidren_comment','Api\CommentApi@children');
 Route::post('post_comment','Api\CommentApi@post_comment');
+Route::get('donate','Api\DonateApi@index');
+Route::post('add_donate','Api\DonateApi@add_donate');
+Route::get('buy_many_chapters','Api\BuyManyChaptersApi@create');
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
