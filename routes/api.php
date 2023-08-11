@@ -112,4 +112,10 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	Route::post('chapter/{id_story}/create','ChapterApi@create');
 	Route::put('chapter/{id_story}/update/{id_chapter}','ChapterApi@update');
 	Route::delete('chapter/{id}/delete/','ChapterApi@destroy');
+
+	//Discount
+	Route::get('discount/{id_story}/index','DiscountApi@index');
+	Route::post('discount/{id_story}/create','DiscountApi@create');
+	Route::put('discount/{id_discount}/update','DiscountApi@update');
+	Route::delete('discount/{id}/delete','DiscountApi@delete');
 });
