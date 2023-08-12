@@ -26,8 +26,8 @@ class BuyManyChapterRequest extends FormRequest
         return [
             'id_user'=>'required',
             'id_truyen'=>'required',
-            "toCoin" => 'required',
-            'fromCoin'=>'required',
+            "toChapter" => 'required',
+            'fromChapter'=>'required',
         ];
     }
     public function messages()
@@ -35,8 +35,8 @@ class BuyManyChapterRequest extends FormRequest
         return [
            'id_user.required' => 'Vui lòng đăng nhập',
            'id_truyen.required' => 'Truyện không được trống',
-           'toCoin.required' => 'Từ chương không được trống',
-           'fromCoin.required' => 'Đến chương không được trống',
+           'toChapter.required' => 'Từ chương không được trống',
+           'fromChapter.required' => 'Đến chương không được trống',
            
         ];
     }

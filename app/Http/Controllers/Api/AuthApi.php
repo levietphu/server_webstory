@@ -78,7 +78,7 @@ class AuthApi extends Controller
             $role[$key]->per=$value->getPer()->select("permissions.slug")->get();
         }
 
-        $user_chapter = Users_chuongtruyen::where('id_user',$user->id)->orderby('created_at','desc')->get()->unique('id_truyen');
+        $user_chapter = Users_chuongtruyen::where('id_user',$user->id)->orderby('created_at','desc')->where("buy_many",0)->get()->unique('id_truyen');
 
         $bookcase = json_decode(json_encode($user_chapter),true);
         foreach ($user_chapter as $key=> $value) {

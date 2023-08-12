@@ -64,8 +64,6 @@ class StoryApi extends Controller
             $user_chuong->id_chuong=$chuong->id;
             $user_chuong->bought=0;
             $user_chuong->id_truyen=$truyen->id;
-            $user_chuong->created_at=Carbon::now();
-            $user_chuong->updated_at=Carbon::now();
             $user_chuong->save();
         }
 

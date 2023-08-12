@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Users_chuongtruyen extends Model
 {
     use HasFactory;
-    public $timestamps = false;
 
     public function chuongs()
     {
