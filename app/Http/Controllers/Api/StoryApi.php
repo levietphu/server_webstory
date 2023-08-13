@@ -124,47 +124,6 @@ class StoryApi extends Controller
         
     }
 
-    public function buyChapter(Request $req)
-    {
-        if($req->id_user){
-            $user = User::find($req->id_user);
-            $truyen = Truyen::where('slug',$req->slug_story)->first();
-            $chuong = Chuongtruyen::where('id_truyen', $truyen->id)->where('slug', $req->slug)->first();
-            $user_chuong_vip = Users_chuongtruyen::where("id_chuong",$chuong->id)->where("id_user",$user->id)->where("bought",1)->first();
-            if($user->coin - $chuong->coin>0 && is_null($user_chuong_vip)){
-                $user->coin = $user->coin - $chuong->coin;
-                $user->save();
-
-                $user_chuong = new Users_chuongtruyen();
-                $user_chuong->id_user=$req->id_user;
-                $user_chuong->id_chuong=$chuong->id;
-                $user_chuong->id_truyen=$truyen->id;
-                $user_chuong->bought=1;
-                $user_chuong->created_at=Carbon::now();
-                $user_chuong->updated_at=Carbon::now();
-                $user_chuong->save();
-
-                return [
-                    'success'=>true,
-                    'status'=>200,
-                ];
-            }
-            return [
-                    'success'=>false,
-                    'status'=>400,
-                    'data' => [
-                        'hasMores'=>"Xu của bạn không đủ. Vui lòng nạp thêm !"
-                    ]
-                ];
-        }
-
-        return  [
-                    'success'=>false,
-                    'status'=>411,
-                    'data' => [
-                        'hasMores'=>"Vui lòng Đăng nhập"
-                    ]
-                ];
-    }
+   
 
 }

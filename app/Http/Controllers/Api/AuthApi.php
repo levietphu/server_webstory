@@ -54,6 +54,7 @@ class AuthApi extends Controller
         $user->remember_token = Str::random(60);
         $user->save();
 
+
         return [
                 'success'=>true,
                 'status'=>200,

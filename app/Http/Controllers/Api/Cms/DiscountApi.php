@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Discount;
 use App\Models\Truyen;
+use App\Models\Chuongtruyen;
 use App\Http\Requests\AddDiscountRequest;
 use DB;
 use Log;
@@ -19,6 +20,7 @@ class DiscountApi extends Controller
      */
     public function index($id_truyen)
     {
+
         $discount = Discount::where("id_truyen",$id_truyen)->get();
         $name_story = Truyen::find($id_truyen)->name;
         return [
@@ -30,6 +32,9 @@ class DiscountApi extends Controller
     }
     public function create(AddDiscountRequest $req,$id_truyen)
     {
+         if(Chuongtruyen::where("id_truyen",$id_truyen)->count() ==0){
+            return abort(400,"Chưa có chương truyện nên không thể thêm giảm giá");
+        }
         try{
             DB::beginTransaction();
             $discount = new Discount;
