@@ -29,6 +29,7 @@ Route::get('get_story','Api\StoryApi@getStory');
 Route::get('get_chapter_story','Api\ChapterApi@getChapterStory');
 Route::get('addview','Api\StoryApi@addViewCount');
 Route::get('view_chapter','Api\StoryApi@viewChapter');
+Route::post('add_bookmark','Api\StoryApi@add_bookmark');
 Route::get('buy_chapter','Api\ChapterApi@buyChapter');
 Route::get('get_comment','Api\CommentApi@index');
 Route::get('get_chidren_comment','Api\CommentApi@children');

@@ -58,14 +58,6 @@ class StoryApi extends Controller
         $user_chuong_vip = Users_chuongtruyen::where("id_chuong",$chuong->id)->where("bought",1)->where('id_user',$req->id_user)->first();
         $chapter_prev = Chuongtruyen::where('id_truyen',$truyen->id)->where('id','<',$chuong->id)->orderby('created_at','desc')->first();
         $chapter_next = Chuongtruyen::where('id_truyen',$truyen->id)->where('id','>',$chuong->id)->orderby('created_at','asc')->first();
-        if($req->id_user && ($chuong->coin==0 || $user_chuong_vip)){
-            $user_chuong = new Users_chuongtruyen();
-            $user_chuong->id_user=$req->id_user;
-            $user_chuong->id_chuong=$chuong->id;
-            $user_chuong->bought=0;
-            $user_chuong->id_truyen=$truyen->id;
-            $user_chuong->save();
-        }
 
         if ($chapter_prev==null) {
             $slug_prev='';
@@ -103,8 +95,9 @@ class StoryApi extends Controller
                     ]
                 ]
             ];
-            
-        }elseif($chuong->coin>0 && is_null($user_chuong_vip)){
+        }
+
+        if($chuong->coin>0 && is_null($user_chuong_vip)){
             return [
                 'success'=>false,
                 'status'=>400,
@@ -120,10 +113,49 @@ class StoryApi extends Controller
                 ]
             ];
         }
-
-        
     }
 
-   
+    public function add_bookmark(Request $req)
+    {
+        if(!$req->id_user){
+            return [
+                "success"=>false,
+                "status"=>400,
+                "message"=>"Vui lòng đăng nhập để thêm vào tủ sách"
+            ];
+        }
 
+        $truyen = Truyen::where('slug',$req->slug_story)->first();
+        $chuong = Chuongtruyen::where('id_truyen', $truyen->id)->where('slug', $req->slug)->first();
+        $user_chuong_vip = Users_chuongtruyen::where("id_chuong",$chuong->id)->where("bought",1)->where('id_user',$req->id_user)->first();
+        $user_chuong = Users_chuongtruyen::all();
+
+        if($user_chuong[count($user_chuong)-1]->id_chuong == $chuong->id){
+            return [
+                "success"=>false,
+                "status"=>400,
+                "message"=>"Chương này mới vừa thêm vào tủ sách"
+            ];
+        }
+
+        if($chuong->coin==0 || $user_chuong_vip){
+            $user_chuong = new Users_chuongtruyen();
+            $user_chuong->id_user=$req->id_user;
+            $user_chuong->id_chuong=$chuong->id;
+            $user_chuong->bought=0;
+            $user_chuong->id_truyen=$truyen->id;
+            $user_chuong->save();
+
+            return [
+                "success"=>true,
+                "status"=>200,
+                "message"=>"Thêm vào tủ sách thành công",
+           ];
+        }
+       return [
+        "success"=>false,
+        "status"=>400,
+        "message"=>"Chưa mua chương này,Vui lòng mua và tự động sẽ thêm vào tủ sách"
+       ];
+    }
 }

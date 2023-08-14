@@ -71,6 +71,7 @@ class ChapterApi extends Controller
                 return [
                     'success'=>true,
                     'status'=>200,
+                    "message"=>"Mua thành công"
                 ];
             }
             return [
