@@ -21,6 +21,7 @@ class AuthApi extends Controller
      */
     public function register(RegisterRequest $req)
     {
+
         $newUser = new User;
         $newUser->email = $req->email;
         $newUser->name = $req->name;
@@ -121,6 +122,6 @@ class AuthApi extends Controller
                 "message"=>"Thêm coin cho user thành công"
             ];
         }
-        return abort(400);
+        return abort(500);
     }
 }

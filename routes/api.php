@@ -90,7 +90,6 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	//Translator
 	Route::get('trans/index','TranslatorApi@index');
 	Route::post('trans/create','TranslatorApi@create');
-	Route::get('trans/{trans}/edit','TranslatorApi@edit');
 	Route::put('trans/{trans}/update','TranslatorApi@update');
 	Route::delete('trans/{trans}/delete','TranslatorApi@delete');
 
@@ -120,4 +119,10 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	Route::post('discount/{id_story}/create','DiscountApi@create');
 	Route::put('discount/{id_discount}/update','DiscountApi@update');
 	Route::delete('discount/{id}/delete','DiscountApi@delete');
+
+	//Translator
+	Route::get('bank_info/index','BankInfoApi@index');
+	Route::post('bank_info/create','BankInfoApi@create');
+	Route::put('bank_info/{bank_info}/update','BankInfoApi@update');
+	Route::delete('bank_info/{bank_info}/delete','BankInfoApi@delete');
 });

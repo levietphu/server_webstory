@@ -64,11 +64,7 @@ class BannerApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return [
-                "success" => false,
-                "status" => 400,
-                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
-            ];
+            return abort(500,$exception->getMessage().'Line'.$exception->getLine());
         }
         
     }
@@ -79,7 +75,6 @@ class BannerApi extends Controller
         if(gettype($req->image)=="string"){
             $image=$req->image;
         }else{
-            
             $image = "Banner/".$req->image['file']['name'];
         }
         try{
@@ -99,17 +94,16 @@ class BannerApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return [
-                "success" => false,
-                "status" => 400,
-                "message" => ':'.$exception->getMessage().'Line'.$exception->getLine()
-            ];
+            return abort(500,$exception->getMessage().'Line'.$exception->getLine());
         }
         
     }
     public function delete($id)
     {
-        Banner::find($id)->delete();
+        $banner = Banner::find($id);
+        $banner->delete();
+         unlink(public_path(
+                "/uploads".$banner->image));
         return [
             "success" => true,
             "status" => 200,

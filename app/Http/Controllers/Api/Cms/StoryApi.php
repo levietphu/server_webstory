@@ -106,11 +106,7 @@ class StoryApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return [
-                "success" => false,
-                "status" => 400,
-                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
-            ];
+           return abort(500,$exception->getMessage().'Line'.$exception->getLine());
         }
     }
 
@@ -196,11 +192,7 @@ class StoryApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return [
-                "success" => false,
-                "status" => 400,
-                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
-            ];
+            return abort(500,$exception->getMessage().'Line'.$exception->getLine());
         }
     }
 
@@ -212,7 +204,10 @@ class StoryApi extends Controller
      */
     public function destroy($id)
     {
-        Truyen::find($id)->delete();
+        $story = Truyen::find($id);
+        $story->delete();
+        unlink(public_path(
+                "/uploads".$story->image));
         return [
             "success" => true,
             "status" => 200,

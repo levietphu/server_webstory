@@ -57,11 +57,7 @@ class ContactApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return [
-                "success" => false,
-                "status" => 400,
-                "message" => 'message:'.$exception->getMessage().'Line'.$exception->getLine()
-            ];
+            return abort(500,$exception->getMessage().'Line'.$exception->getLine());
         }
         
     }

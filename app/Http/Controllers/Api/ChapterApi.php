@@ -55,9 +55,8 @@ class ChapterApi extends Controller
             $truyen = Truyen::where('slug',$req->slug_story)->first();
             $chuong = Chuongtruyen::where('id_truyen', $truyen->id)->where('slug', $req->slug)->first();
             $user_chuong_vip = Users_chuongtruyen::where("id_chuong",$chuong->id)->where("id_user",$user->id)->where("bought",1)->first();
+            
             if($user->coin - $chuong->coin>0 && is_null($user_chuong_vip)){
-                $user->coin = $user->coin - $chuong->coin;
-                $user->save();
 
                 $user_chuong = new Users_chuongtruyen();
                 $user_chuong->id_user=$req->id_user;
@@ -67,6 +66,21 @@ class ChapterApi extends Controller
                 $user_chuong->created_at=Carbon::now();
                 $user_chuong->updated_at=Carbon::now();
                 $user_chuong->save();
+
+                if($req->id_user === $truyen->id_user){
+                    return [
+                        "success"=>true,
+                        "status"=>200,
+                        "message" => "Là dịch giả nên không mất xu"
+                    ];
+                }
+
+                $user->coin = $user->coin - $chuong->coin;
+                $user->save();
+
+                $user_posted = User::find($truyen->id_user);
+                $user_posted->coin = $user_posted->coin + $chuong->coin;
+                $user_posted->save();
 
                 return [
                     'success'=>true,
