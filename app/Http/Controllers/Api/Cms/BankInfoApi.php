@@ -31,18 +31,21 @@ class BankInfoApi extends Controller
     {
         
         $image = $req->file('image')->getClientOriginalName();
-        $qrcode = $req->file("qr_code")->getClientOriginalName();
 
+        if($req->qr_code || $req->file("qr_code")){
+            $qrcode = $req->file("qr_code")->getClientOriginalName();
+            $req->file('qr_code')->move('public/uploads/BankInfo/', $qrcode);
+        }
         //upload ảnh lên thư mục      
         $req->file('image')->move('public/uploads/BankInfo/', $image);
-        $req->file('qr_code')->move('public/uploads/BankInfo/', $qrcode);
          try{
             DB::beginTransaction();
             $bank_info = new BankInfo;
             $bank_info->name_bank= $req->name_bank;
             $bank_info->owner= $req->owner;
+            $bank_info->email= $req->email;
             $bank_info->slug= $req->slug;
-            $bank_info->qr_code= $qrcode;
+            $bank_info->qr_code= $req->qr_code;
             $bank_info->image= $image;
             $bank_info->type= $req->type;
             $bank_info->stk= $req->stk;
@@ -58,8 +61,11 @@ class BankInfoApi extends Controller
 
              unlink(public_path(
                 "/uploads/BankInfo/".$image));
+             if($req->qr_code || $req->file("qr_code")){
               unlink(public_path(
                 "/uploads/BankInfo/".$qrcode));
+
+             }
 
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
             return abort(500,$exception->getMessage().'Line'.$exception->getLine());
@@ -84,9 +90,9 @@ class BankInfoApi extends Controller
             "/uploads/BankInfo/".$bank_info->image));
         }
 
-        if(gettype($req->qr_code)=="string"){
+        if($req->qr_code && gettype($req->qr_code)=="string"){
             $qrcode=$req->qr_code;
-        }else{
+        }elseif($req->qr_code && gettype($req->qr_code)!="string"){
             $image = $req->file('qr_code')->getClientOriginalName();  
 
             //upload ảnh lên thư mục      
@@ -102,7 +108,8 @@ class BankInfoApi extends Controller
             $bank_info->name_bank= $req->name_bank;
             $bank_info->owner= $req->owner;
             $bank_info->slug= $req->slug;
-            $bank_info->qr_code= $qrcode;
+            $bank_info->qr_code= $req->qr_code;
+            $bank_info->email= $req->email;
             $bank_info->image= $image;
             $bank_info->type= $req->type;
             $bank_info->stk= $req->stk;
@@ -116,7 +123,7 @@ class BankInfoApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            if(gettype($req->image)!="string" || gettype($req->qr_code)!="string"){
+            if($req->qr_code && (gettype($req->image)!="string" || gettype($req->qr_code)!="string")){
                 unlink(public_path(
                 "/uploads/BankInfo/".$image));
                 unlink(public_path(
@@ -132,8 +139,10 @@ class BankInfoApi extends Controller
         $bank_info=BankInfo::find($id);
          unlink(public_path(
         "/uploads/BankInfo/".$bank_info->image));
-        unlink(public_path(
-        "/uploads/BankInfo/".$bank_info->qr_code));
+        if($bank_info->qr_code){
+            unlink(public_path(
+            "/uploads/BankInfo/".$bank_info->qr_code));         
+         }
         $bank_info->delete();
         return [
             "success" => true,

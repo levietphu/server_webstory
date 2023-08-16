@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnToBankInfosTable extends Migration
+class AddPaidToCoinLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class AddColumnToBankInfosTable extends Migration
      */
     public function up()
     {
-        Schema::table('bank_infos', function (Blueprint $table) {
-            $table->text("note");
-            
+        Schema::table('coin_logs', function (Blueprint $table) {
+            $table->text("image")->nullable();
+        });
+         Schema::table('bank_infos', function (Blueprint $table) {
+            $table->string("email")->nullable();
         });
     }
 
@@ -26,7 +28,7 @@ class AddColumnToBankInfosTable extends Migration
      */
     public function down()
     {
-        Schema::table('bank_infos', function (Blueprint $table) {
+        Schema::table('coin_logs', function (Blueprint $table) {
             //
         });
     }

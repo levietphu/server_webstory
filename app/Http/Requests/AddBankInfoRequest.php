@@ -27,7 +27,6 @@ class AddBankInfoRequest extends FormRequest
             'name_bank'=>'required|max:255',
             'owner'=>'required|max:255',
             'slug'=>'required|max:255|unique:bank_infos',
-            "stk" => 'required',
             'type'=>'required',
             'image'=>'required',
         ];
@@ -42,7 +41,6 @@ class AddBankInfoRequest extends FormRequest
            'slug.required' => 'Slug không được bỏ trống',
            'slug.max' => 'Slug không được quá 255 ký tự',
            'slug.unique' => 'Slug không được quá trùng',
-           'stk.required' => 'số tài khoản không được bỏ trống',
            'type.required' => 'Kiểu không được bỏ trống',
            'image.required' => 'Ảnh ngân hàng không được bỏ trống',
         ];

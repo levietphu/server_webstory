@@ -17,7 +17,7 @@ class CreateBankInfosTable extends Migration
             $table->bigIncrements('id');
             $table->string("name_bank");
             $table->string("owner");
-            $table->integer("stk");
+            $table->bigInteger("stk")->nullable();
             $table->text("qr_code")->nullable();
             $table->text('image');
             $table->tinyInteger("type")->comment("0 là ngân hàng,1 là ví,2 là thẻ cào");

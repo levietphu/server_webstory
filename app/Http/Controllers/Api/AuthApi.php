@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Users_chuongtruyen;
+use App\Models\BookMark;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use Hash;
@@ -80,7 +81,7 @@ class AuthApi extends Controller
             $role[$key]->per=$value->getPer()->select("permissions.slug")->get();
         }
 
-        $user_chapter = Users_chuongtruyen::where('id_user',$user->id)->orderby('created_at','desc')->where("buy_many",0)->get()->unique('id_truyen');
+        $user_chapter = BookMark::where('id_user',$user->id)->orderby('created_at','desc')->get()->unique('id_truyen');
 
         $bookcase = json_decode(json_encode($user_chapter),true);
         foreach ($user_chapter as $key=> $value) {

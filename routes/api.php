@@ -26,10 +26,10 @@ Route::post('register','Api\AuthApi@register');
 Route::post('login','Api\AuthApi@login');
 Route::get('getUser','Api\AuthApi@getUser');
 Route::get('get_story','Api\StoryApi@getStory');
-Route::get('get_chapter_story','Api\ChapterApi@getChapterStory');
+Route::get('get_chapter_story','Api\StoryApi@getChapterStory');
 Route::get('addview','Api\StoryApi@addViewCount');
-Route::get('view_chapter','Api\StoryApi@viewChapter');
-Route::post('add_bookmark','Api\StoryApi@add_bookmark');
+Route::get('view_chapter','Api\ChapterApi@viewChapter');
+Route::post('add_bookmark','Api\ChapterApi@add_bookmark');
 Route::get('buy_chapter','Api\ChapterApi@buyChapter');
 Route::get('get_comment','Api\CommentApi@index');
 Route::get('get_chidren_comment','Api\CommentApi@children');
@@ -38,6 +38,7 @@ Route::get('donate','Api\DonateApi@index');
 Route::post('add_donate','Api\DonateApi@add_donate');
 Route::post('buy_many_chapters','Api\BuyManyChaptersApi@create');
 Route::post('check_price','Api\BuyManyChaptersApi@check_price');
+Route::post('remove_bookmark','Api\ChapterApi@remove_bookmark');
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
