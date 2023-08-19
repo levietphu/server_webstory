@@ -32,12 +32,14 @@ class BankInfoApi extends Controller
         
         $image = $req->file('image')->getClientOriginalName();
 
+        //upload ảnh lên thư mục      
+        $req->file('image')->move('public/uploads/BankInfo/', $image);
+
         if($req->qr_code || $req->file("qr_code")){
             $qrcode = $req->file("qr_code")->getClientOriginalName();
             $req->file('qr_code')->move('public/uploads/BankInfo/', $qrcode);
         }
-        //upload ảnh lên thư mục      
-        $req->file('image')->move('public/uploads/BankInfo/', $image);
+        
          try{
             DB::beginTransaction();
             $bank_info = new BankInfo;
@@ -45,10 +47,12 @@ class BankInfoApi extends Controller
             $bank_info->owner= $req->owner;
             $bank_info->email= $req->email;
             $bank_info->slug= $req->slug;
-            $bank_info->qr_code= $req->qr_code;
+            $bank_info->qr_code= $req->qr_code|| $req->file("qr_code") ?$qrcode : $req->qr_code;
             $bank_info->image= $image;
+            $bank_info->note= $req->note;
             $bank_info->type= $req->type;
             $bank_info->stk= $req->stk;
+            $bank_info->id_user= $req->id_user;
             $bank_info->save();
             DB::commit();
             return [
@@ -108,12 +112,15 @@ class BankInfoApi extends Controller
             $bank_info->name_bank= $req->name_bank;
             $bank_info->owner= $req->owner;
             $bank_info->slug= $req->slug;
-            $bank_info->qr_code= $req->qr_code;
+            $bank_info->qr_code= $req->qr_code|| $req->file("qr_code") ?$qrcode : $req->qr_code;
             $bank_info->email= $req->email;
             $bank_info->image= $image;
+            $bank_info->note= $req->note;
             $bank_info->type= $req->type;
             $bank_info->stk= $req->stk;
+            $bank_info->id_user= $req->id_user;
             $bank_info->save();
+            
             DB::commit();
             return [
             "success" => true,

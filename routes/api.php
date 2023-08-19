@@ -39,6 +39,10 @@ Route::post('add_donate','Api\DonateApi@add_donate');
 Route::post('buy_many_chapters','Api\BuyManyChaptersApi@create');
 Route::post('check_price','Api\BuyManyChaptersApi@check_price');
 Route::post('remove_bookmark','Api\ChapterApi@remove_bookmark');
+Route::get('load_cent_info','Api\LoadCentApi@info');
+Route::post('get_trans_code','Api\AuthApi@getTransitionCode');
+Route::post('create_transaction','Api\PaymentApi@create_transaction');
+Route::get('show_transaction','Api\PaymentApi@show_transaction');
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
@@ -121,9 +125,15 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	Route::put('discount/{id_discount}/update','DiscountApi@update');
 	Route::delete('discount/{id}/delete','DiscountApi@delete');
 
-	//Translator
+	//Bank info
 	Route::get('bank_info/index','BankInfoApi@index');
 	Route::post('bank_info/create','BankInfoApi@create');
 	Route::put('bank_info/{bank_info}/update','BankInfoApi@update');
 	Route::delete('bank_info/{bank_info}/delete','BankInfoApi@delete');
+
+	//Load cent
+	Route::get('load_cent/{id_bankinfo}/index','LoadCentApi@index');
+	Route::post('load_cent/{id_bankinfo}/create','LoadCentApi@create');
+	Route::put('load_cent/{load_cent}/update','LoadCentApi@update');
+	Route::delete('load_cent/{load_cent}/delete','LoadCentApi@delete');
 });

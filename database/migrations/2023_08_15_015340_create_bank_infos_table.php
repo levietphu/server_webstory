@@ -20,6 +20,7 @@ class CreateBankInfosTable extends Migration
             $table->bigInteger("stk")->nullable();
             $table->text("qr_code")->nullable();
             $table->text('image');
+            $table->string('email')->nullable();
             $table->tinyInteger("type")->comment("0 là ngân hàng,1 là ví,2 là thẻ cào");
             $table->timestamps();
         });

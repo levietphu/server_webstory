@@ -125,4 +125,5 @@ class AuthApi extends Controller
         }
         return abort(500);
     }
+    
 }

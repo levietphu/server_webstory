@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPaidToCoinLogsTable extends Migration
+class AddIdUserToBankInfosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class AddPaidToCoinLogsTable extends Migration
      */
     public function up()
     {
-        Schema::table('coin_logs', function (Blueprint $table) {
-            $table->text("image")->nullable();
-        });
-         Schema::table('bank_infos', function (Blueprint $table) {
-            $table->string("email")->nullable();
+        Schema::table('bank_infos', function (Blueprint $table) {
+            $table->unsignedBigInteger("id_user");
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -28,7 +26,7 @@ class AddPaidToCoinLogsTable extends Migration
      */
     public function down()
     {
-        Schema::table('coin_logs', function (Blueprint $table) {
+        Schema::table('bank_infos', function (Blueprint $table) {
             //
         });
     }

@@ -29,16 +29,16 @@ class StoryApi extends Controller
         $truyen->theloais = $afterView->truyen;
         $truyen->tacgia = $afterView->tacgia;
         $truyen->dichgia = $afterView->dichgia;
-       
+        
         $truyen->rank = Truyen::orderby('view_count','desc')->where('vip',1)->where('status',1)->limit(3)->select("id")->get();
         $truyen->chapter_one = Chuongtruyen::where("id_truyen",$afterView->id)->first();
         $truyen->total_chapter = $afterView->chuong()->count();
 
-            return ['success'=>true,
-            'status'=>200,
-            'data' => [
-                'items' => $truyen]
-            ];        
+        return ['success'=>true,
+        'status'=>200,
+        'data' => [
+            'items' => $truyen]
+        ];        
     }
     public function addViewCount(Request $req)
     {
@@ -48,7 +48,7 @@ class StoryApi extends Controller
         return [];
     }
 
-     public function getChapterStory(Request $req)
+    public function getChapterStory(Request $req)
     {
         $story = Truyen::where('slug',$req->slug)->first();
         $keyword = $req->keyword;
@@ -60,22 +60,22 @@ class StoryApi extends Controller
             return ['success'=>true,
             'status'=>200,
             'chapter' => $chapter
-            ];
-        }else{
-            $check = json_decode(json_encode($chapter));
-            foreach ($chapter as $key=> $value) {
-                $check->data[$key]->bought =$value->getChapterPersonal()->where("users_chuongtruyens.id_user",$req->id_user)->where("users_chuongtruyens.bought",1)->first();
-            }
-            $chapter = $check;
-            return ['success'=>true,
-            'status'=>200,
-            'chapter' =>$chapter
-            ];
+        ];
+    }else{
+        $check = json_decode(json_encode($chapter));
+        foreach ($chapter as $key=> $value) {
+            $check->data[$key]->bought =$value->getChapterPersonal()->where("users_chuongtruyens.id_user",$req->id_user)->where("users_chuongtruyens.bought",1)->first();
         }
-        
-    }
+        $chapter = $check;
+        return ['success'=>true,
+        'status'=>200,
+        'chapter' =>$chapter
+    ];
+}
 
-   
+}
 
-    
+
+
+
 }

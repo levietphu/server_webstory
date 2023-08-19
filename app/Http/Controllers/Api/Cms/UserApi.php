@@ -32,7 +32,7 @@ class UserApi extends Controller
         ];
     }
 
-  
+    
     public function update_role(Request $req,$id)
     {
         try{
@@ -41,19 +41,19 @@ class UserApi extends Controller
             $user->getRole()->sync($req->id_role);
             DB::commit();
             return [
-            "success" => true,
-            "status" => 200,
-            "message" =>"Cập nhật vai trò cho user thành công"
-        ];
+                "success" => true,
+                "status" => 200,
+                "message" =>"Cập nhật vai trò cho user thành công"
+            ];
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-           return abort(500,$exception->getMessage().'Line'.$exception->getLine());
+            return abort(500,$exception->getMessage().'Line'.$exception->getLine());
         }
         
     }
 
-public function add_coin(Request $req,$id)
+    public function add_coin(Request $req,$id)
     {
         try{
             DB::beginTransaction();
@@ -62,10 +62,10 @@ public function add_coin(Request $req,$id)
             $user->save();
             DB::commit();
             return [
-            "success" => true,
-            "status" => 200,
-            "message" =>"Thêm xu thành công"
-        ];
+                "success" => true,
+                "status" => 200,
+                "message" =>"Thêm xu thành công"
+            ];
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
