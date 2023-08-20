@@ -54,7 +54,10 @@ class StoryApi extends Controller
         $keyword = $req->keyword;
         $orderby = $req->orderby;
 
-        $chapter = $story->chuong()->where('chapter_number','like','%'.$keyword.'%')->orderby('created_at',$orderby)->select('id','name_chapter','chapter_number','slug','coin','created_at')->paginate(20);
+        $chapter = $story->chuong()->where(function($query) use ($keyword){
+            $query->where('name_chapter', 'like', '%' . $keyword . '%')
+            ->orWhere('chapter_number', 'like', '%' . $keyword . '%');
+        })->orderby('created_at',$orderby)->select('id','name_chapter','chapter_number','slug','coin','created_at')->paginate(20);
 
         if(!$req->id_user){
             return ['success'=>true,

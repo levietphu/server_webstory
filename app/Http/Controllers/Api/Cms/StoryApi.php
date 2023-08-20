@@ -26,6 +26,7 @@ class StoryApi extends Controller
     {
         $check = Truyen::orderby('created_at','desc')->get();
         $story = json_decode(json_encode($check));
+        
         foreach ($check as $key => $value) {
             $story[$key]->all_chapter = $value->chuong->count();
             $story[$key]->name_user = $value->getUserStory->name;

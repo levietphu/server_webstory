@@ -18,14 +18,6 @@ class SearchApi extends Controller
     {
         $keyword = $req->keyword;
 
-        if(!$keyword){
-            return [
-                'success'=>false,
-                'status'=>401,
-                'data' => ['hasMore'=>"error missing request"]
-            ];
-        }
-
         $check = Truyen::where('name','like','%'.$keyword.'%')->get();
 
         $searchTruyen = json_decode(json_encode($check));
@@ -34,33 +26,27 @@ class SearchApi extends Controller
         }
 
         return ['success'=>true,'status'=>200,'data' => [
-           'items'=>$searchTruyen
-        ]
-            
-        ];
-    }
+         'items'=>$searchTruyen
+     ]
+ ];
+}
 
-    public function searchChapter(Request $req)
-    {
-        $keyword = $req->keyword;
-        $id_story =$req->id_story;
+public function searchChapter(Request $req)
+{
+    $keyword = $req->keyword;
+    $id_story =$req->id_story;
 
-        if(!$keyword){
-            return [
-                'success'=>false,
-                'status'=>401,
-                'data' => ['hasMore'=>"error missing request"]
-            ];
-        }
-
-        $searchChuong = Chuongtruyen::where('id_truyen',$id_story)->where('chapter_number','like','%'.$keyword.'%')->select('name_chapter','chapter_number','slug','coin')->paginate(1);
+    $searchChuong = Chuongtruyen::where('id_truyen',$id_story)->where(function($query) use ($keyword){
+        $query->where('name_chapter', 'like', '%' . $keyword . '%')
+        ->orWhere('chapter_number', 'like', '%' . $keyword . '%');
+    })->select('name_chapter','chapter_number','slug','coin')->paginate(1);
 
 
-        return ['success'=>true,'status'=>200,'data' => [
-           'items'=>$searchChuong
-        ]
-            
-        ];
-    }
-    
+    return ['success'=>true,'status'=>200,'data' => [
+     'items'=>$searchChuong
+ ]
+
+];
+}
+
 }

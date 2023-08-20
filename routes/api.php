@@ -46,6 +46,10 @@ Route::get('show_transaction','Api\PaymentApi@show_transaction');
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
+
+	//Vào trang dashboard
+	Route::get('dashboard','DashboardApi@index');
+
 	//tác giả
 	Route::get('author/index','AuthorApi@index');
 	Route::post('author/create','AuthorApi@create');
@@ -67,21 +71,21 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 
 	//Config
 		//logo
-		Route::get('logo/index','LogoApi@index');
-		Route::post('logo/create','LogoApi@create');
-		Route::put('logo/{logo}/update','LogoApi@update');
-		Route::post('logo/{logo}/hidden','LogoApi@hidden');
-		Route::post('upload_logo/{id}', "LogoApi@uploadLogo");
+	Route::get('logo/index','LogoApi@index');
+	Route::post('logo/create','LogoApi@create');
+	Route::put('logo/{logo}/update','LogoApi@update');
+	Route::post('logo/{logo}/hidden','LogoApi@hidden');
+	Route::post('upload_logo/{id}', "LogoApi@uploadLogo");
 
 		//ads
-		Route::get('ads/index','AdsApi@index');
-		Route::post('ads/create','AdsApi@create');
-		Route::put('ads/{ads}/update','AdsApi@update');
-		Route::post('ads/{ads}/hidden','AdsApi@hidden');
+	Route::get('ads/index','AdsApi@index');
+	Route::post('ads/create','AdsApi@create');
+	Route::put('ads/{ads}/update','AdsApi@update');
+	Route::post('ads/{ads}/hidden','AdsApi@hidden');
 
 		//contact
-		Route::get('contact/index','ContactApi@index');
-		Route::put('contact/{contact}/update','ContactApi@update');
+	Route::get('contact/index','ContactApi@index');
+	Route::put('contact/{contact}/update','ContactApi@update');
 
 	//Permission
 	Route::post('permission/create','PermissionApi@create');
