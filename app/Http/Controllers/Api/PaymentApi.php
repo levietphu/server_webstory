@@ -51,9 +51,11 @@ class PaymentApi extends Controller
             return abort(500,$exception->getMessage().'Line'.$exception->getLine());
         }
     }
+
+
     public function show_transaction(Request $req)
     {
-        $transaction_history = TransitionHistory::where("id_user",$req->id_user)->orderby("updated_at","desc")->paginate(2);
+        $transaction_history = TransitionHistory::where("id_user",$req->id_user)->orderby("updated_at","desc")->paginate(20);
         return [
             "success"=>true,
             "status"=>200,
@@ -61,4 +63,37 @@ class PaymentApi extends Controller
         ];
     }
     
+    public function change_status_payment(Request $req)
+    {
+        if($req->status != 0){
+            $transition = TransitionHistory::find($req->id_transaction);
+            $transition->status = $req->status;
+            $transition->save();
+
+            if($req->status ==1){
+                return [
+                 "success"=>false,
+                 "status"=>400,
+                 "message"=>"Yêu cầu không thành công"
+             ];
+         }
+
+         if($req->status ==2){
+            $user = User::find($transition->id_user);
+            $user->coin = $user->coin + $req->coin_number;
+            $user->save();
+        }
+
+        return [
+            "success"=>true,
+            "status"=>200,
+            "message"=>"Yêu cầu thanh toán thành công + Đã nạp xu vào tài khoản"
+        ];
+    }
+        return [
+            "success"=>false,
+            "status"=>400,
+            "message"=>"Không thể chuyển trạng thái về chờ duyệt"
+        ];
+    }
 }

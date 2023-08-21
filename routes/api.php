@@ -43,6 +43,7 @@ Route::get('load_cent_info','Api\LoadCentApi@info');
 Route::post('get_trans_code','Api\AuthApi@getTransitionCode');
 Route::post('create_transaction','Api\PaymentApi@create_transaction');
 Route::get('show_transaction','Api\PaymentApi@show_transaction');
+Route::post('change_status_payment','Api\PaymentApi@change_status_payment');
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {

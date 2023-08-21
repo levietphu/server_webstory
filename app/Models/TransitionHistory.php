@@ -18,4 +18,15 @@ class TransitionHistory extends Model
         // hasOne(RelatedModel, foreignKeyOnRelatedModel = transitionHistory_id, localKey = id)
         return $this->hasOne(BankInfo::class,"id","id_bankinfo");
     }
+
+    /**
+     * TransitionHistory has one GetUser.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function getUser()
+    {
+        // hasOne(RelatedModel, foreignKeyOnRelatedModel = transitionHistory_id, localKey = id)
+        return $this->hasOne(User::class,"id","id_user");
+    }
 }

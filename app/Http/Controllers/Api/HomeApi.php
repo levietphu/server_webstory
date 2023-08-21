@@ -56,7 +56,7 @@ class HomeApi extends Controller
             $newUpdateStory[$key]->chuong = $value->chuong()->orderBy('created_at','desc')->first();
         }
 
-        $aa = Truyen::where('full', 1)->orderby('created_at','desc')->limit(20)->get();
+        $aa = Truyen::where('full', 1)->orderby('truyens.created_at','desc')->limit(20)->get();
         
         $fullStory = json_decode(json_encode($aa));
         foreach ($aa as $key => $value) {
