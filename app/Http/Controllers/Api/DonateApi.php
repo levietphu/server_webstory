@@ -61,16 +61,15 @@ class DonateApi extends Controller
 
             DB::commit();
             return [
-            "success" => true,
-            "status" => 200,
-            "remaining_coins" =>$user_donate->coin
-        ];
+                "success" => true,
+                "status" => 200,
+                "remaining_coins" =>$user_donate->coin
+            ];
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
             
-            return abort(500, "".$exception->getMessage().'Line'.$exception->getLine());
-               
+            return abort(500, "Lỗi hệ thống");    
         }
     }
    

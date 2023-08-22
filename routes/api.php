@@ -30,7 +30,7 @@ Route::get('get_chapter_story','Api\StoryApi@getChapterStory');
 Route::get('addview','Api\StoryApi@addViewCount');
 Route::get('view_chapter','Api\ChapterApi@viewChapter');
 Route::post('add_bookmark','Api\ChapterApi@add_bookmark');
-Route::get('buy_chapter','Api\ChapterApi@buyChapter');
+Route::post('buy_chapter','Api\ChapterApi@buyChapter');
 Route::get('get_comment','Api\CommentApi@index');
 Route::get('get_chidren_comment','Api\CommentApi@children');
 Route::post('post_comment','Api\CommentApi@post_comment');
@@ -43,7 +43,7 @@ Route::get('load_cent_info','Api\LoadCentApi@info');
 Route::post('get_trans_code','Api\AuthApi@getTransitionCode');
 Route::post('create_transaction','Api\PaymentApi@create_transaction');
 Route::get('show_transaction','Api\PaymentApi@show_transaction');
-Route::post('change_status_payment','Api\PaymentApi@change_status_payment');
+
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
@@ -141,4 +141,12 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	Route::post('load_cent/{id_bankinfo}/create','LoadCentApi@create');
 	Route::put('load_cent/{load_cent}/update','LoadCentApi@update');
 	Route::delete('load_cent/{load_cent}/delete','LoadCentApi@delete');
+
+	//transaction
+	Route::get('transaction/index','TransactionApi@index');
+	Route::post('change_status_payment','TransactionApi@change_status_payment');
+
+	//withdraw_money
+	Route::get('withdraw_money/index','WithdrawMoneyApi@index');
+	Route::post('withdraw_money/create','WithdrawMoneyApi@create');
 });

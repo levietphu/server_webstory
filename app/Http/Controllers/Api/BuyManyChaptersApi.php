@@ -9,6 +9,7 @@ use App\Models\Chuongtruyen;
 use App\Models\Truyen;
 use App\Models\Users_chuongtruyen;
 use App\Models\Discount;
+use App\Models\AmountReceived;
 use App\Http\Requests\BuyManyChapterRequest;
 use DB;
 use Carbon\Carbon;
@@ -17,6 +18,7 @@ class BuyManyChaptersApi extends Controller
 {
     public function create(BuyManyChapterRequest $req)
     {
+
         $user = User::find($req->id_user);
 
         $toChapter = $req->toChapter;
@@ -42,13 +44,15 @@ class BuyManyChaptersApi extends Controller
         }
 
         $chapter_will_buy= [];
-        foreach ($check as $key => $value) {
-            if(explode("-",$value->slug)[1] <=$fromChapter && $toChapter<= explode("-",$value->slug)[1]){
-                if(!in_array($value->id,$id_bought)){
-                    $totalCoin+=$value->coin;
-                    $chapter_will_buy[]=$value;
-                    try{
-                        DB::beginTransaction();
+        try{
+            DB::beginTransaction();
+
+            foreach ($check as $key => $value) {
+                if(explode("-",$value->slug)[1] <=$fromChapter && $toChapter<= explode("-",$value->slug)[1]){
+                    if(!in_array($value->id,$id_bought)){
+                        $totalCoin+=$value->coin;
+                        $chapter_will_buy[]=$value;
+
                         $user_many_chapter = new Users_chuongtruyen;
                         $user_many_chapter->id_chuong=$value->id;
                         $user_many_chapter->id_user=$req->id_user;
@@ -56,52 +60,61 @@ class BuyManyChaptersApi extends Controller
                         $user_many_chapter->id_truyen=$req->id_truyen;
                         $user_many_chapter->buy_many=1;
                         $user_many_chapter->save();
-                        DB::commit();
-                    }catch(\Exception $exception){
-                        DB::rollback();
-                        return abort(500);
+                    }
+                } 
+            }
+
+            $discount = Discount::where("id_truyen",$req->id_truyen)->get();
+            $minus = [];
+            $sale=0;
+
+            //check giảm giá
+            if(count($discount)>0){
+                foreach ($discount as $value) {
+                    if(count($chapter_will_buy) >= $value->number_chapter){
+                        $minus[] = $value;
                     }
                 }
-            } 
-        }
-
-        $discount = Discount::where("id_truyen",$req->id_truyen)->get();
-        $minus = [];
-        $sale=0;
-
-        //check giảm giá
-        if(count($discount)>0){
-            foreach ($discount as $value) {
-                if(count($chapter_will_buy) >= $value->number_chapter){
-                    $minus[] = $value;
+                if(count($minus)>0){
+                    $sale=(int)round($totalCoin*$minus[count($minus)-1]->value/100);
                 }
             }
-            if(count($minus)>0){
-                $sale=(int)round($totalCoin*$minus[count($minus)-1]->value/100);
-            }
-        }
 
-        
-        $reduceCoin=$totalCoin-$sale;
 
-        if($req->id_user == $user_posted->id){
-            return [
+            $reduceCoin=$totalCoin-$sale;
+
+            if($req->id_user == $user_posted->id){
+                DB::commit();
+                return [
+                    "success"=>true,
+                    "status"=>200,
+                    "remaining_coins"=>$user->coin
+                ];
+            }   
+
+            $user->coin = $user->coin - $reduceCoin;
+            $user->save();
+
+            $user_posted->coin = $user_posted->coin + $reduceCoin;
+            $user_posted->save();
+
+            $amount_receiveds = new AmountReceived;
+            $amount_receiveds->user_receive = $user_posted->id;
+            $amount_receiveds->money = $reduceCoin;
+            $amount_receiveds->save();
+
+            DB::commit();
+             return [
                 "success"=>true,
                 "status"=>200,
                 "remaining_coins"=>$user->coin
             ];
-        }   
+        }catch(\Exception $exception){
+            DB::rollback();
+            Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+            return abort(500,"Có lỗi xảy ra. Vui lòng mua lại");
+        }
        
-        $user->coin = $user->coin - $reduceCoin;
-        $user->save();
-        
-        $user_posted->coin = $user_posted->coin + $reduceCoin;
-        $user_posted->save();
-        return [
-            "success"=>true,
-            "status"=>200,
-            "remaining_coins"=>$user->coin
-        ];
     }
     public function check_price(BuyManyChapterRequest $req)
     {
@@ -173,55 +186,55 @@ class BuyManyChaptersApi extends Controller
         //check dịch giả đăng truyện không mất xu
         if($req->id_user==Truyen::find($req->id_truyen)->id_user){
            return [
-                "success"=>true,
-                "status"=>200,
-                "data"=>[
-                    "toChapter"=>$chapter_will_buy[0]->chapter_number,
-                    "fromChapter"=>$chapter_will_buy[count($chapter_will_buy)-1]->chapter_number,
-                    "totalChapter"=>count($chapter_will_buy),
-                    "totalCoin"=>$totalCoin,
-                    "sale"=>$sale,
-                    "discount_percent"=>count($minus)>0 ? $minus[count($minus)-1]->value:0,
-                    "discount_chapter"=>count($minus)>0?$minus[count($minus)-1]->number_chapter:0,
-                    "payment"=>0,
-                    "message"=> "Dịch giả không mất xu, Vui lòng xác nhận thanh toán",
-                ]
-            ];
-        }
-
-        //check khi không đủ tiền thanh toán
-        if($user->coin < $totalCoin){
-            return [
-                "success"=>false,
-                "status"=>400,
-                "data"=>[
-                    "toChapter"=>$chapter_will_buy[0]->chapter_number,
-                    "fromChapter"=>$chapter_will_buy[count($chapter_will_buy)-1]->chapter_number,
-                    "totalChapter"=>count($chapter_will_buy),
-                    "totalCoin"=>$totalCoin,
-                    "sale"=>$sale,
-                    "discount_percent"=>count($minus)>0 ? $minus[count($minus)-1]->value:0,
-                    "discount_chapter"=>count($minus)>0?$minus[count($minus)-1]->number_chapter:0,
-                    "payment"=>$reduceCoin,
-                    "message"=> "Bạn không đủ XU để thanh toán vui lòng nạp thêm",
-                ]
-            ];
-        }
-
-        return [
             "success"=>true,
             "status"=>200,
             "data"=>[
-                    "toChapter"=>$chapter_will_buy[0]->chapter_number,
-                    "fromChapter"=>$chapter_will_buy[count($chapter_will_buy)-1]->chapter_number,
-                    "totalChapter"=>count($chapter_will_buy),
-                    "totalCoin"=>$totalCoin,
-                    "sale"=>$sale,
-                    "discount_percent"=>count($minus)>0 ? $minus[count($minus)-1]->value:0,
-                    "discount_chapter"=>count($minus)>0?$minus[count($minus)-1]->number_chapter:0,
-                    "payment"=>$reduceCoin,
-                    "message"=> "Số xu của bạn đủ để thanh toán",
-                ]
+                "toChapter"=>$chapter_will_buy[0]->chapter_number,
+                "fromChapter"=>$chapter_will_buy[count($chapter_will_buy)-1]->chapter_number,
+                "totalChapter"=>count($chapter_will_buy),
+                "totalCoin"=>$totalCoin,
+                "sale"=>$sale,
+                "discount_percent"=>count($minus)>0 ? $minus[count($minus)-1]->value:0,
+                "discount_chapter"=>count($minus)>0?$minus[count($minus)-1]->number_chapter:0,
+                "payment"=>0,
+                "message"=> "Dịch giả không mất xu, Vui lòng xác nhận thanh toán",
+            ]
         ];
     }
+
+        //check khi không đủ tiền thanh toán
+    if($user->coin < $totalCoin){
+        return [
+            "success"=>false,
+            "status"=>400,
+            "data"=>[
+                "toChapter"=>$chapter_will_buy[0]->chapter_number,
+                "fromChapter"=>$chapter_will_buy[count($chapter_will_buy)-1]->chapter_number,
+                "totalChapter"=>count($chapter_will_buy),
+                "totalCoin"=>$totalCoin,
+                "sale"=>$sale,
+                "discount_percent"=>count($minus)>0 ? $minus[count($minus)-1]->value:0,
+                "discount_chapter"=>count($minus)>0?$minus[count($minus)-1]->number_chapter:0,
+                "payment"=>$reduceCoin,
+                "message"=> "Bạn không đủ XU để thanh toán vui lòng nạp thêm",
+            ]
+        ];
+    }
+
+    return [
+        "success"=>true,
+        "status"=>200,
+        "data"=>[
+            "toChapter"=>$chapter_will_buy[0]->chapter_number,
+            "fromChapter"=>$chapter_will_buy[count($chapter_will_buy)-1]->chapter_number,
+            "totalChapter"=>count($chapter_will_buy),
+            "totalCoin"=>$totalCoin,
+            "sale"=>$sale,
+            "discount_percent"=>count($minus)>0 ? $minus[count($minus)-1]->value:0,
+            "discount_chapter"=>count($minus)>0?$minus[count($minus)-1]->number_chapter:0,
+            "payment"=>$reduceCoin,
+            "message"=> "Số xu của bạn đủ để thanh toán",
+        ]
+    ];
+}
 }

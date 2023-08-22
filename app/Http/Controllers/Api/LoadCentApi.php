@@ -24,11 +24,13 @@ class LoadCentApi extends Controller
         foreach ($check1 as $key => $value) {
             $bank_info[$key]->loadcents = $value->getLoadCent()->get();
         }
+        
         $check2=BankInfo::where('type',1)->get();
         $wallet_info = json_decode(json_encode($check2));
         foreach ($check2 as $key => $value) {
             $wallet_info[$key]->loadcents = $value->getLoadCent()->get();
         }
+        
         $check3=BankInfo::where('type',2)->get();
         $card = json_decode(json_encode($check3));
         foreach ($check3 as $key => $value) {

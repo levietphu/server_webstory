@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\cms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\TransitionHistory;
 use App\Models\Users_chuongtruyen;
 use App\Models\Donate;
+use App\Models\AmountReceived;
 use DB;
 use Log;
 use Carbon\Carbon;
@@ -29,74 +29,53 @@ class DashboardApi extends Controller
         $start_month=Carbon::now()->startOfMonth();
         $end_month=Carbon::now()->endOfMonth();
 
-        $transaction = TransitionHistory::select("transition_histories.*","users.name as name_user_payment","bank_infos.type as type_bank","bank_infos.id_user as id_user_bank")
-        ->join("users","transition_histories.id_user","=","users.id")
-        ->join("bank_infos","bank_infos.id","=","transition_histories.id_bankinfo")
-        ->wherebetween('transition_histories.created_at',[$start_today,$end_today])
-        ->get();
-
         //Doanh thu hôm nay
 
         $total_coin_today = 0;
         $total_coin_donate_today = 0;
 
-        $revenue_to_day = Users_chuongtruyen::wherebetween("users_chuongtruyens.created_at",[$start_today,$end_today])->join("truyens","users_chuongtruyens.id_truyen","=","truyens.id")
-        ->join("chuongtruyens","chuongtruyens.id","=","users_chuongtruyens.id_chuong")->select("truyens.id_user","chuongtruyens.coin")->get();
+        $amount_receiveds_today = AmountReceived::wherebetween("created_at",[$start_today,$end_today])->where("user_receive",$req->id_user)->get();
 
-        $donate_today = Donate::wherebetween("created_at",[$start_today,$end_today])->select("coin_donate","donnor")->get();
+        $donate_today = Donate::wherebetween("created_at",[$start_today,$end_today])->where("donnor",$req->id_user)->select("coin_donate")->get();
 
-        foreach ($revenue_to_day as $value) {
-            if($req->id_user == $value->id_user){
-                $total_coin_today+=$value->coin;
-            }
+        foreach ($amount_receiveds_today as $value) {
+            $total_coin_today +=$value->money;
         }
 
         foreach ($donate_today as $value) {
-            if($req->id_user == $value->donnor){
-                $total_coin_donate_today+=$value->coin_donate;
-            }
+            $total_coin_donate_today+=$value->coin_donate;
         }
 
         //Doanh thu tháng này
         $total_coin_month = 0;
         $total_coin_donate_month = 0;
 
-        $revenue_month = Users_chuongtruyen::wherebetween("users_chuongtruyens.created_at",[$start_month,$end_month])->join("truyens","users_chuongtruyens.id_truyen","=","truyens.id")
-        ->join("chuongtruyens","chuongtruyens.id","=","users_chuongtruyens.id_chuong")->select("truyens.id_user","chuongtruyens.coin")->get();
-        
-        $donate_month = Donate::wherebetween("created_at",[$start_month,$end_month])->select("coin_donate","donnor")->get();
+        $amount_receiveds_month = AmountReceived::wherebetween("created_at",[$start_month,$end_month])->where("user_receive",$req->id_user)->get();
 
-        foreach ($revenue_month as $value) {
-            if($req->id_user == $value->id_user){
-                $total_coin_month+=$value->coin;
-            }
+        $donate_month = Donate::wherebetween("created_at",[$start_month,$end_month])->where("donnor",$req->id_user)->select("coin_donate")->get();
+
+        foreach ($amount_receiveds_month as $value) {
+            $total_coin_month +=$value->money;
         }
 
         foreach ($donate_month as $value) {
-            if($req->id_user == $value->donnor){
-                $total_coin_donate_month+=$value->coin_donate;
-            }
+            $total_coin_donate_month+=$value->coin_donate;
         }
 
         //Doanh thu tháng trước
         $total_coin_last_month = 0;
         $total_coin_donate_last_month = 0;
 
-        $revenue_last_month = Users_chuongtruyen::wherebetween("users_chuongtruyens.created_at",[$start_last_month,$end_last_month])->join("truyens","users_chuongtruyens.id_truyen","=","truyens.id")
-        ->join("chuongtruyens","chuongtruyens.id","=","users_chuongtruyens.id_chuong")->select("truyens.id_user","chuongtruyens.coin")->get();
+        $amount_receiveds_last_month = AmountReceived::wherebetween("created_at",[$start_last_month,$end_last_month])->where("user_receive",$req->id_user)->get();
 
-        $donate_last_month = Donate::wherebetween("created_at",[$start_last_month,$end_last_month])->select("coin_donate","donnor")->get();
+        $donate_last_month = Donate::wherebetween("created_at",[$start_last_month,$end_last_month])->where("donnor",$req->id_user)->select("coin_donate")->get();
 
-        foreach ($revenue_last_month as $value) {
-            if($req->id_user == $value->id_user){
-                $total_coin_last_month+=$value->coin;
-            }
+        foreach ($amount_receiveds_last_month as $value) {
+            $total_coin_last_month +=$value->money;
         }
 
-         foreach ($donate_last_month as $value) {
-            if($req->id_user == $value->donnor){
-                $total_coin_donate_month+=$value->coin_donate;
-            }
+        foreach ($donate_last_month as $value) {
+            $total_coin_donate_last_month+=$value->coin_donate;
         }
 
         //Số chương mua hôm nay
@@ -133,7 +112,6 @@ class DashboardApi extends Controller
         	"success" => true,
         	"status" => 200,
         	"dashboard" => [
-                "transaction"=>$transaction,
                 "revenue"=>[
                     "today"=>$total_coin_today+$total_coin_donate_today,
                     "month"=>$total_coin_month+$total_coin_donate_month,

@@ -18,15 +18,16 @@ class PaymentApi extends Controller
      */
     public function create_transaction(Request $req)
     {
-        if($req->image || $req->file("image")){
-            $image = $req->file('image')->getClientOriginalName();  
-
-        //upload ảnh lên thư mục      
-            $req->file('image')->move('public/uploads/Transaction/', $image);
-        }
-        
         try{
+
             DB::beginTransaction();
+            if($req->image || $req->file("image")){
+                $image = $req->file('image')->getClientOriginalName();  
+
+                //upload ảnh lên thư mục      
+                $req->file('image')->move('public/uploads/Transaction/', $image);
+            }   
+
             $transition = new TransitionHistory;
             $transition->transaction_code = $req->transaction_code;
             $transition->content = $req->content;
@@ -48,7 +49,7 @@ class PaymentApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return abort(500,$exception->getMessage().'Line'.$exception->getLine());
+            return abort(500,"Lỗi hệ thống. Vui lòng thử lại sau");
         }
     }
 
@@ -63,37 +64,5 @@ class PaymentApi extends Controller
         ];
     }
     
-    public function change_status_payment(Request $req)
-    {
-        if($req->status != 0){
-            $transition = TransitionHistory::find($req->id_transaction);
-            $transition->status = $req->status;
-            $transition->save();
-
-            if($req->status ==1){
-                return [
-                 "success"=>false,
-                 "status"=>400,
-                 "message"=>"Yêu cầu không thành công"
-             ];
-         }
-
-         if($req->status ==2){
-            $user = User::find($transition->id_user);
-            $user->coin = $user->coin + $req->coin_number;
-            $user->save();
-        }
-
-        return [
-            "success"=>true,
-            "status"=>200,
-            "message"=>"Yêu cầu thanh toán thành công + Đã nạp xu vào tài khoản"
-        ];
-    }
-        return [
-            "success"=>false,
-            "status"=>400,
-            "message"=>"Không thể chuyển trạng thái về chờ duyệt"
-        ];
-    }
+   
 }

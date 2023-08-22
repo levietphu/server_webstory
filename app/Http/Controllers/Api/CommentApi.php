@@ -22,7 +22,7 @@ class CommentApi extends Controller
         // Hiển thị comment
         $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->paginate(1);
         $comments_story = json_decode(json_encode($check_comment));
-            
+
         foreach ($check_comment as $key => $value) {
             $comments_story->data[$key]->user = $value->user_comment()->select("id","name")->first();
             $comments_story->data[$key]->user->roles = $comments_story->data[$key]->user->getRole()->select("roles.id","roles.name")->get();
@@ -55,9 +55,11 @@ class CommentApi extends Controller
     public function post_comment(Request $req)
     {
          $story = Truyen::where("slug",$req->slug)->first();
-        //post comment
-         if($req->id_user){
+            //post comment
+         try{
             if($req->content || $req->reply_content){
+                DB::beginTransaction();
+
                 $comment = new Comment;
                 $comment ->id_user = $req->id_user;
                 $comment ->id_truyen = $story->id;
@@ -65,12 +67,18 @@ class CommentApi extends Controller
                 $comment ->id_parent = $req->id_parent;
                 $comment->save();
 
-
-                return abort(200,"Thêm comment thành công");
+                DB::commit();
+                return [
+                    "success" => true,
+                    "status" => 200,
+                    "message" =>"Thêm comment thành công"
+                ];
             }
+        }catch(\Exception $exception){
+            DB::rollback();
+            Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+            return abort(500,"Lỗi hệ thống");
         }
-        return abort(400,"Không có user");
-
 
     }
 }
