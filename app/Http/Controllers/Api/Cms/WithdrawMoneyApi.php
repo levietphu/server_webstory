@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\cms;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\WithdrawMoney;
+use App\Models\AffiliatedBank;
 use App\Models\User;
 use DB;
 use Log;
@@ -16,15 +17,17 @@ class WithdrawMoneyApi extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
 
-        $withdraw_money = WithdrawMoney::all();
+        $withdraw_money = WithdrawMoney::where("id_user",$req->id_user)->get();
+        $affiliated_banks = AffiliatedBank::where("id_user",$req->id_user)->get();
 
         return [
         	"success" => true,
         	"status" => 200,
-        	"withdraw_money" => $withdraw_money
+        	"withdraw_money" => $withdraw_money,
+            "affiliated_banks" => $affiliated_banks
         ];
     }
 
@@ -47,8 +50,8 @@ class WithdrawMoneyApi extends Controller
                  }
 
                  if($req->status ==2){
-                    $user = User::find($transition->id_user);
-                    $user->coin = $user->coin + $req->coin;
+                    $user = User::find($withdraw_money->id_user);
+                    $user->coin = $user->coin - $withdraw_money->coin;
                     $user->save();
                 }
 
@@ -56,7 +59,7 @@ class WithdrawMoneyApi extends Controller
                 return [
                     "success" => true,
                     "status" => 200,
-                    "message" =>"Đã chuyển khoản thành công"
+                    "message" =>"Lệnh đã được duyệt + chuyển khoản cho người tạo"
                 ];
             }
         }catch(\Exception $exception){
@@ -68,11 +71,16 @@ class WithdrawMoneyApi extends Controller
 
     public function create(Request $req)
     {
+        $user = User::find($req->id_user);
+        if($req->coin > $user->coin){
+            return abort(400,"Số xu không đủ để rút");
+        }
          try{
             DB::beginTransaction();
 
             $withdraw_money = new WithdrawMoney;
             $withdraw_money->id_user=$req->id_user;
+            $withdraw_money->id_affiliatedbank=$req->id_affiliatedbank;
             $withdraw_money->transaction_code=$req->transaction_code;
             $withdraw_money->coin=$req->coin;
             $withdraw_money->money=$req->money;

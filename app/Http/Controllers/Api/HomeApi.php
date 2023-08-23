@@ -35,7 +35,6 @@ class HomeApi extends Controller
                 $truyenhot_sort_week[$key]->theloais = $value->truyen()->select('name')->first();
             }
 
-
         $rankVip = Truyen::where("truyens.vip",1)->orderby('truyens.view_count', 'desc')->join('theloai_truyens','theloai_truyens.id_truyen','=','truyens.id')
         ->join('theloais','theloais.id','=','theloai_truyens.id_theloai')->where('truyens.status',1)->groupby('truyens.id')->limit(20)->get(array(DB::raw('theloais.name as nameTheloai'),'truyens.*'));
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Users_chuongtruyen;
 use App\Models\Donate;
 use App\Models\AmountReceived;
+use App\Models\WithdrawMoney;
 use DB;
 use Log;
 use Carbon\Carbon;
@@ -28,6 +29,9 @@ class DashboardApi extends Controller
 
         $start_month=Carbon::now()->startOfMonth();
         $end_month=Carbon::now()->endOfMonth();
+
+        //duyệt giao dịch rút tiền
+        $withdraw_money = WithdrawMoney::join("users","users.id","=","withdraw_money.id_user")->join("affiliated_banks","affiliated_banks.id","=","withdraw_money.id_affiliatedbank")->wherebetween("withdraw_money.created_at",[$start_month,$end_month])->orderby("withdraw_money.created_at","desc")->select("withdraw_money.*","users.name","affiliated_banks.name_bank","affiliated_banks.stk","affiliated_banks.owner_account")->get();
 
         //Doanh thu hôm nay
 
@@ -79,39 +83,23 @@ class DashboardApi extends Controller
         }
 
         //Số chương mua hôm nay
-        $chapter_today = Users_chuongtruyen::wherebetween("created_at",[$start_today,$end_today])->select("id_user")->get();
-        $count_chapter_today = [];
-
-        foreach ($chapter_today as $value) {
-            if($req->id_user == $value->id_user){
-                $count_chapter_today[]=$value->id_user;
-            }
-        }
+        $count_chapter_today = Users_chuongtruyen::where("id_user",$req->id_user)->wherebetween("created_at",[$start_today,$end_today])->count();
 
         //Số chương mua tháng nay
-        $chapter_month = Users_chuongtruyen::wherebetween("created_at",[$start_month,$end_month])->select("id_user")->get();
-        $count_chapter_month = [];
-        
-        foreach ($chapter_month as $value) {
-            if($req->id_user == $value->id_user){
-                $count_chapter_month[]=$value->id_user;
-            }
-        }
-
+        $count_chapter_month = Users_chuongtruyen::where("id_user",$req->id_user)->wherebetween("created_at",[$start_month,$end_month])->count();
+       
         //Số chương mua tháng trước
-        $chapter_last_month = Users_chuongtruyen::wherebetween("created_at",[$start_last_month,$end_last_month])->select("id_user")->get();
-        $count_chapter_last_month = [];
+        $count_chapter_last_month = Users_chuongtruyen::where("id_user",$req->id_user)->wherebetween("created_at",[$start_last_month,$end_last_month])->count();
         
-        foreach ($chapter_last_month as $value) {
-            if($req->id_user == $value->id_user){
-                $count_chapter_last_month[]=$value->id_user;
-            }
-        }
+        //Rút tiền
+        $withdraw_money_success = WithdrawMoney::where("id_user",$req->id_user)->where("status",2)->count();//đã rút
+        $withdraw_money_waiting = WithdrawMoney::where("id_user",$req->id_user)->where("status",0)->count();//đang chờ duyệt
 
         return [
         	"success" => true,
         	"status" => 200,
         	"dashboard" => [
+                "all_withdraw_money" =>$withdraw_money,
                 "revenue"=>[
                     "today"=>$total_coin_today+$total_coin_donate_today,
                     "month"=>$total_coin_month+$total_coin_donate_month,
@@ -123,10 +111,12 @@ class DashboardApi extends Controller
                     "last_month"=>$total_coin_donate_last_month,
                 ],
                 "buy_chapter" => [
-                    "today"=>count($count_chapter_today),
-                    "month"=>count($count_chapter_month),
-                    "last_month"=>count($count_chapter_last_month),
-                ]
+                    "today"=>$count_chapter_today,
+                    "month"=>$count_chapter_month,
+                    "last_month"=>$count_chapter_last_month,
+                ],
+                    "withdraw_money_success"=>$withdraw_money_success,
+                    "withdraw_money_waiting"=>$withdraw_money_waiting
             ]
         ];
     }

@@ -149,4 +149,9 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	//withdraw_money
 	Route::get('withdraw_money/index','WithdrawMoneyApi@index');
 	Route::post('withdraw_money/create','WithdrawMoneyApi@create');
+	Route::post('accept_withdraw_money','WithdrawMoneyApi@accept_withdraw_money');
+
+	//withdraw_money
+	Route::get('affiliated_bank/index','AffiliatedBankApi@index');
+	Route::post('affiliated_bank/create','AffiliatedBankApi@create');
 });
