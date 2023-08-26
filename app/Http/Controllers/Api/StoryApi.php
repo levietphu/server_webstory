@@ -62,7 +62,7 @@ class StoryApi extends Controller
         if(!$req->id_user){
             return ['success'=>true,
             'status'=>200,
-            'chapter' => $chapter
+            'chapter' => $chapter,
         ];
     }else{
         $check = json_decode(json_encode($chapter));
@@ -72,7 +72,7 @@ class StoryApi extends Controller
         $chapter = $check;
         return ['success'=>true,
         'status'=>200,
-        'chapter' =>$chapter
+        'chapter' =>$chapter,
     ];
 }
 

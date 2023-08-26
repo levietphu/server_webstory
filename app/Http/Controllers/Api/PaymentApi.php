@@ -56,7 +56,7 @@ class PaymentApi extends Controller
 
     public function show_transaction(Request $req)
     {
-        $transaction_history = TransitionHistory::where("id_user",$req->id_user)->orderby("updated_at","desc")->paginate(20);
+        $transaction_history = TransitionHistory::where("id_user",$req->id_user)->orderby("updated_at","desc")->paginate(10);
         return [
             "success"=>true,
             "status"=>200,

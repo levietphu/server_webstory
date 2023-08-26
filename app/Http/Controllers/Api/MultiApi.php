@@ -22,10 +22,6 @@ class MultiApi extends Controller
         $slug = $req->slug;
         $page = $req->page;
 
-        if(!$slug){
-            return rebort(400,"error missing request");
-        }
-
         $cate = Theloai::where('slug',$slug)->first();
         if(!$cate){
             return rebort(404,"Not found");
@@ -36,6 +32,11 @@ class MultiApi extends Controller
         ->groupby('chuongtruyens.id_truyen')->orderby(DB::raw('max(chuongtruyens.created_at)'), 'desc')
         ->select('truyens.*')
         ->paginate(10);
+
+        $total = Truyen::join('chuongtruyens','truyens.id','=','chuongtruyens.id_truyen')->join('theloai_truyens','theloai_truyens.id_truyen','=','truyens.id')->join('theloais','theloais.id','=','theloai_truyens.id_theloai')
+        ->where('truyens.status',1)->where('theloais.slug',$slug)
+        ->get()->count();
+
         if($page > $check->lastPage() || $page <1 && isset($page)){
             return [
                 'success'=>false,
@@ -50,7 +51,8 @@ class MultiApi extends Controller
         }
         return ['success'=>true,'status' => 200,'data' => [
             'items'=>$cateStory,
-            'name'=>$cate->name
+            'name'=>$cate->name,
+            'total'=>$total,
         ]
             
         ];
@@ -68,12 +70,15 @@ class MultiApi extends Controller
         }
         if($slug == 'truyen-vip'){
             $check = Truyen::orderby('view_count','desc')->where('vip',1)->where('status',1)->paginate(30);
+            $total=Truyen::orderby('view_count','desc')->where('vip',1)->where('status',1)->get()->count();
         }
         if($slug =='truyen-mien-phi'){
             $check = Truyen::where('vip',0)->where('truyens.status',1)->paginate(10);
+            $total=Truyen::where('vip',0)->where('truyens.status',1)->get()->count();
         }
         if($slug =='truyen-full'){
             $check = Truyen::where('full',1)->where('truyens.status',1)->paginate(10);
+            $total=Truyen::where('full',1)->where('truyens.status',1)->get()->count();
         }
         if($slug =='truyen-moi'){
             $check = Truyen::join('chuongtruyens','truyens.id','=','chuongtruyens.id_truyen')
@@ -81,6 +86,11 @@ class MultiApi extends Controller
             ->groupby('chuongtruyens.id_truyen')->orderby(DB::raw('max(chuongtruyens.created_at)'), 'desc')
             ->select('truyens.*')
             ->paginate(10);
+
+            $total=Truyen::join('chuongtruyens','truyens.id','=','chuongtruyens.id_truyen')
+            ->where('truyens.status',1)
+            ->groupby('chuongtruyens.id_truyen')->orderby(DB::raw('max(chuongtruyens.created_at)'), 'desc')
+            ->get()->count();
         }
         if($slug != 'truyen-vip' && $slug != 'truyen-full' && $slug != 'truyen-mien-phi' && $slug != 'truyen-moi' ){
             return [
@@ -105,6 +115,7 @@ class MultiApi extends Controller
         
         return ['success'=>true,'data' => [
             'items'=>$listStory,
+            "total"=>$total
         ]
             
         ];

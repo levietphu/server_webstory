@@ -8,6 +8,7 @@ use App\Models\Users_chuongtruyen;
 use App\Models\Donate;
 use App\Models\AmountReceived;
 use App\Models\WithdrawMoney;
+use App\Models\Truyen;
 use DB;
 use Log;
 use Carbon\Carbon;
@@ -95,6 +96,9 @@ class DashboardApi extends Controller
         $withdraw_money_success = WithdrawMoney::where("id_user",$req->id_user)->where("status",2)->count();//đã rút
         $withdraw_money_waiting = WithdrawMoney::where("id_user",$req->id_user)->where("status",0)->count();//đang chờ duyệt
 
+        //Số truyện đã được trả tiền
+        $total_story = Users_chuongtruyen::join('truyens',"truyens.id","=","users_chuongtruyens.id_truyen")->where("truyens.id_user",$req->id_user)->groupby("users_chuongtruyens.id_truyen")->get()->count();
+
         return [
         	"success" => true,
         	"status" => 200,
@@ -115,10 +119,24 @@ class DashboardApi extends Controller
                     "month"=>$count_chapter_month,
                     "last_month"=>$count_chapter_last_month,
                 ],
-                    "withdraw_money_success"=>$withdraw_money_success,
-                    "withdraw_money_waiting"=>$withdraw_money_waiting
+                "withdraw_money_success"=>$withdraw_money_success,
+                "withdraw_money_waiting"=>$withdraw_money_waiting,
+                "total_story"=>$total_story,
             ]
         ];
     }
-
+    
+    public function get_story_dashboard(Request $req)
+    {
+     
+    $story_user = Users_chuongtruyen::join('truyens',"truyens.id","=","users_chuongtruyens.id_truyen")->join("tacgias","tacgias.id","=","truyens.id_tacgia")->join("translators","translators.id","=","truyens.id_trans")->where("truyens.id_user",$req->id_user)->select("truyens.*",DB::raw("tacgias.name as name_author"),DB::raw("translators.name as name_trans"))->groupby("users_chuongtruyens.id_truyen")->paginate(5);
+    $total = Users_chuongtruyen::join('truyens',"truyens.id","=","users_chuongtruyens.id_truyen")->where("truyens.id_user",$req->id_user)->groupby("users_chuongtruyens.id_truyen")->get()->count();
+       
+     return [
+        "success"=>true,
+        "status"=>200,
+        "story_user"=>$story_user,
+        "total"=>$total,
+     ];
+    }
 }

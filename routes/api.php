@@ -50,6 +50,7 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 
 	//Vào trang dashboard
 	Route::get('dashboard','DashboardApi@index');
+	Route::get('get_story_dashboard','DashboardApi@get_story_dashboard');
 
 	//tác giả
 	Route::get('author/index','AuthorApi@index');
@@ -151,7 +152,7 @@ Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
 	Route::post('withdraw_money/create','WithdrawMoneyApi@create');
 	Route::post('accept_withdraw_money','WithdrawMoneyApi@accept_withdraw_money');
 
-	//withdraw_money
+	//affiliated bank
 	Route::get('affiliated_bank/index','AffiliatedBankApi@index');
 	Route::post('affiliated_bank/create','AffiliatedBankApi@create');
 });

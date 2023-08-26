@@ -36,6 +36,7 @@ class AddTruyenRequest extends FormRequest
             'id_trans'=>'required',
             'id_tacgia'=>'required',
             'id_user'=>'required',
+            'id_cate'=>'required',
         ];
     }
     public function messages()
@@ -56,6 +57,7 @@ class AddTruyenRequest extends FormRequest
             'id_trans.required' => 'Dịch giả không được bỏ trống',
             'id_tacgia.required' => 'Tác giả không được bỏ trống',
             'id_user.required' => 'người thêm không được bỏ trống',
+            'id_cate.required' => 'Thể loại không được bỏ trống',
         ];
     }
 }

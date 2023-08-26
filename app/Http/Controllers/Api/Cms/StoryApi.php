@@ -180,7 +180,7 @@ class StoryApi extends Controller
             $truyen->discount= $req->discount;
             $truyen->hot= $req->hot;
             $truyen->status= $req->status;
-            $truyen->id_user = $req->id_user;
+            $truyen->id_user= $req->id_user;
             $truyen->save();
             $truyen->truyen()->sync($req->id_cate);
 
