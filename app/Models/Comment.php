@@ -28,4 +28,17 @@ class Comment extends Model
         // belongsTo(RelatedModel, foreignKey = chidrent_comment_id, keyOnRelatedModel = id)
         return $this->hasMany(Comment::class,'id_parent','id');
     }
+
+    /**
+     * Comment has one GetStory.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function getStory()
+    {
+        // hasOne(RelatedModel, foreignKeyOnRelatedModel = comment_id, localKey = id)
+        return $this->belongsTo(Truyen::class,"id_truyen");
+    }
+
+    
 }

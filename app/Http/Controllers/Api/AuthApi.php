@@ -12,6 +12,7 @@ use App\Http\Requests\LoginRequest;
 use Hash;
 use Str;
 use DB;
+use Log;
 
 class AuthApi extends Controller
 {
@@ -120,6 +121,35 @@ public function getUser(Request $req)
 
 
 }
+
+public function forgot(Request $req)
+{
+     $user = User::where("email",$req->email)->first();
+    if(!$user){
+        return abort(400,"Không tìm thấy tài khoản này");
+    }
+    try{
+        DB::beginTransaction();
+
+
+
+        DB::commit();
+
+        return [
+            "success"=>true,
+            "status"=>200,
+            "message"=>"Mã xác nhận đã được gửi về email của bạn."
+        ];
+    }catch(\Exception $exception){
+        DB::rollback();
+        Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+        return abort(500);
+    }   
+    
+    
+}
+
+
 public function add_coin(Request $req)
 {
     if($req->id_user){

@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Donate;
 use App\Models\Truyen;
+use App\Models\NotificationObject;
+use App\Models\Notification;
 use DB;
+use Log;
 
 class DonateApi extends Controller
 {
@@ -58,6 +61,16 @@ class DonateApi extends Controller
 
             $user_donate->coin = $user_donate->coin - $req->coin_donate;
             $user_donate->save();
+
+            $noti_obj = new NotificationObject;
+            $noti_obj->type = 2;
+            $noti_obj->save();
+
+            $noti = new Notification;
+            $noti->id_noti_object = $noti_obj->id;
+            $noti->save();
+
+            $noti_obj->getDonate()->attach($donate->id);
 
             DB::commit();
             return [

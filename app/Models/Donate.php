@@ -22,4 +22,15 @@ class Donate extends Model
     {
         return $this->belongsTo(User::class,"donnor","id");
     }
+
+   /**
+    * Donate has one GetStory.
+    *
+    * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    */
+   public function getStory()
+   {
+       // hasOne(RelatedModel, foreignKeyOnRelatedModel = donate_id, localKey = id)
+       return $this->belongsTo(Truyen::class,"id_truyen","id");
+   }
 }

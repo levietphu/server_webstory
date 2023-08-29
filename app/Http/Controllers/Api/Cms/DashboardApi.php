@@ -130,13 +130,11 @@ class DashboardApi extends Controller
     {
      
     $story_user = Users_chuongtruyen::join('truyens',"truyens.id","=","users_chuongtruyens.id_truyen")->join("tacgias","tacgias.id","=","truyens.id_tacgia")->join("translators","translators.id","=","truyens.id_trans")->where("truyens.id_user",$req->id_user)->select("truyens.*",DB::raw("tacgias.name as name_author"),DB::raw("translators.name as name_trans"))->groupby("users_chuongtruyens.id_truyen")->paginate(5);
-    $total = Users_chuongtruyen::join('truyens',"truyens.id","=","users_chuongtruyens.id_truyen")->where("truyens.id_user",$req->id_user)->groupby("users_chuongtruyens.id_truyen")->get()->count();
-       
+
      return [
         "success"=>true,
         "status"=>200,
         "story_user"=>$story_user,
-        "total"=>$total,
      ];
     }
 }

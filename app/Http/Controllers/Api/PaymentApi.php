@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\TransitionHistory;
+use App\Models\NotificationRecipient;
+use App\Models\Notification;
+use App\Models\NotificationObject;
+use App\Models\BankInfo;
 use DB;
 use Log;
 
@@ -18,6 +22,8 @@ class PaymentApi extends Controller
      */
     public function create_transaction(Request $req)
     {
+
+        $bank_info = BankInfo::find($req->id_bankinfo);
         try{
 
             DB::beginTransaction();
@@ -39,6 +45,21 @@ class PaymentApi extends Controller
             $transition->code_card = $req->code_card;
             $transition->image = $req->image || $req->file("image") ?$image :$req->image;
             $transition->save();
+
+            $noti_obj = new NotificationObject;
+            $noti_obj->type = 3;
+            $noti_obj->save();
+
+            $noti = new Notification;
+            $noti->id_noti_object = $noti_obj->id;
+            $noti->save();
+
+            $noti_obj->getTransition()->attach($transition->id);
+
+            $notification_recipients = new NotificationRecipient;
+            $notification_recipients->id_user = $bank_info->id_user;
+            $notification_recipients->id_noti = $noti->id;
+            $notification_recipients->save();
 
             DB::commit();
             return [

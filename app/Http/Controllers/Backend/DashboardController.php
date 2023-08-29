@@ -26,7 +26,7 @@ class DashboardController extends Controller
             'email'=>'required',
             'password'=>'required|min:8'
         ]);
-        $admin = User::where('email',$req->email)->where('role',1)->first();
+        $admin = User::where('email',$req->email)->first();
        if (empty($admin)) {
            return redirect()->back()->with('error','Email không tồn tại');
        }else{

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNotificationsTable extends Migration
+class CreateNotificationObjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateNotificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create('notification_objects', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
+            $table->tinyInteger("type")->comment("1 là comment,2 là donate,3 là nạp tiền");
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ class CreateNotificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists('notification_objects');
     }
 }

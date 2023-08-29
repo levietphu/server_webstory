@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Truyen;
+use App\Models\NotificationObject;
+use App\Models\Notification;
 use DB;
+use Log;
 
 class CommentApi extends Controller
 {
@@ -55,7 +58,7 @@ class CommentApi extends Controller
     public function post_comment(Request $req)
     {
          $story = Truyen::where("slug",$req->slug)->first();
-            //post comment
+        //post comment
          try{
             if($req->content || $req->reply_content){
                 DB::beginTransaction();
@@ -66,6 +69,17 @@ class CommentApi extends Controller
                 $comment ->content = !$req->content?$req->reply_content:$req->content;
                 $comment ->id_parent = $req->id_parent;
                 $comment->save();
+
+                $noti_obj = new NotificationObject;
+                $noti_obj->type = 1;
+                $noti_obj->save();
+
+                $noti = new Notification;
+                $noti->id_noti_object = $noti_obj->id;
+                $noti->save();
+
+                $noti_obj->getComment()->attach($comment->id);
+
 
                 DB::commit();
                 return [

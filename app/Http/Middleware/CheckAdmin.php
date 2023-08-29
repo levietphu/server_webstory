@@ -17,7 +17,9 @@ class CheckAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-       dd($token = is_null($req->bearerToken()) ? $req->token:$req->bearerToken());
+        // if(!Session::get("admin")){
+        //     return redirect("admin/login");
+        // }
         return $next($request);
     }
 }
