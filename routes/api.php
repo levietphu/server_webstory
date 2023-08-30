@@ -45,6 +45,8 @@ Route::post('get_trans_code','Api\AuthApi@getTransitionCode');
 Route::post('create_transaction','Api\PaymentApi@create_transaction');
 Route::get('show_transaction','Api\PaymentApi@show_transaction');
 Route::get('notification','Api\NotificationApi@index');
+Route::post('change_is_read','Api\NotificationApi@change_is_read');
+Route::post('change_is_view','Api\NotificationApi@change_is_view');
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {
