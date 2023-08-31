@@ -25,6 +25,8 @@ Route::get('search_chapter','Api\SearchApi@searchChapter');
 Route::post('register','Api\AuthApi@register');
 Route::post('login','Api\AuthApi@login');
 Route::post('forgot','Api\AuthApi@forgot');
+Route::post('check_otp','Api\AuthApi@check_otp');
+Route::post('change_pass','Api\AuthApi@change_pass');
 Route::get('getUser','Api\AuthApi@getUser');
 Route::get('get_story','Api\StoryApi@getStory');
 Route::get('get_chapter_story','Api\StoryApi@getChapterStory');
@@ -47,6 +49,7 @@ Route::get('show_transaction','Api\PaymentApi@show_transaction');
 Route::get('notification','Api\NotificationApi@index');
 Route::post('change_is_read','Api\NotificationApi@change_is_read');
 Route::post('change_is_view','Api\NotificationApi@change_is_view');
+
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {

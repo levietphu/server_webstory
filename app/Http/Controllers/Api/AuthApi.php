@@ -9,10 +9,13 @@ use App\Models\Users_chuongtruyen;
 use App\Models\BookMark;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpForgotPass;
 use Hash;
 use Str;
 use DB;
 use Log;
+use Carbon\Carbon;
 
 class AuthApi extends Controller
 {
@@ -23,7 +26,7 @@ class AuthApi extends Controller
      */
     public function register(RegisterRequest $req)
     {
-     try{
+       try{
         DB::beginTransaction();
 
         $newUser = new User;
@@ -35,15 +38,14 @@ class AuthApi extends Controller
 
         DB::commit();
         return ['success'=>true,
-        'status'=>200,
-        'data' => ['result'=>'Đăng ký thành công']
-    ];
-}catch(\Exception $exception){
-    DB::rollback();
-    Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-    return abort(500,"Đăng ký thất bại");
-}
-
+            'status'=>200,
+            'data' => ['result'=>'Đăng ký thành công']
+        ];
+    }catch(\Exception $exception){
+        DB::rollback();
+        Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+        return abort(500,"Đăng ký thất bại");
+    }
 }
 
 public function login(LoginRequest $req)
@@ -109,7 +111,7 @@ public function getUser(Request $req)
 
 
     return ['success'=>true,'status'=>200,'data' => [
-     'items'=>[
+       'items'=>[
         'user'=>$user,
         'bookcase'=>$bookcase,
         'vipbuy'=>$vipbuy,
@@ -124,31 +126,74 @@ public function getUser(Request $req)
 
 public function forgot(Request $req)
 {
-     $user = User::where("email",$req->email)->first();
-    if(!$user){
+   $user = User::where("email",$req->email)->first();
+   if(!$user){
         return abort(400,"Không tìm thấy tài khoản này");
     }
     try{
         DB::beginTransaction();
 
+        $user->otp = rand(00000000,1000000);
+        $user->before_expired_time=Carbon::now();
+        $user->check_otp = 5;
+        $user->save();
 
+        Mail::to($req->email)->send(new OtpForgotPass($user));
 
         DB::commit();
 
         return [
             "success"=>true,
             "status"=>200,
-            "message"=>"Mã xác nhận đã được gửi về email của bạn."
+            "message"=>"Mã xác nhận đã được gửi về email của bạn.",
+            "id_check_user" =>$user->id
         ];
     }catch(\Exception $exception){
         DB::rollback();
         Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
         return abort(500);
     }   
-    
-    
 }
 
+public function check_otp(Request $req)
+{
+    $user = User::find($req->id);
+    $now=Carbon::now();
+
+    if($user->check_otp ==0){
+        return abort(400,"Bạn đã hết số lần thử");
+    }
+
+    if($user->otp != $req->otp){
+        $user->check_otp = $user->check_otp-1;
+        $user->save();
+        return abort(400,"Sai OTP. Bạn còn lại ".($user->check_otp)." lần nữa để thử lại");
+    }
+
+    if($now->diffInMinutes($user->before_expired_time)>5){
+        return abort(400,"Mã OTP đã hết hạn");
+    }
+
+    return [
+        "success"=>true,
+        "status"=>200,
+        "user_reset_password" => $user
+    ];
+}
+
+public function change_pass(Request $req)
+{
+    
+    $user = User::find($req->id);
+    $user->password = Hash::make($req->password);
+    $user->save();
+
+    return [
+        "success"=>true,
+        "status"=>200,
+        "message"=>"Thay đổi mật khẩu thành công. Vui lòng đăng nhập lại!"
+    ];
+}
 
 public function add_coin(Request $req)
 {
