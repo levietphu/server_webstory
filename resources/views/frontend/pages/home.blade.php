@@ -185,6 +185,7 @@
 </div>
 @endsection --}}
 <div>
+    <p>{{$aa}}</p>
     <p>https://tienvuc.azurewebsites.net/api/home</p>
     <p>https://tienvuc.azurewebsites.net/api/layout</p>
     <p>https://tienvuc.azurewebsites.net/api/cate?slug="..."</p>

@@ -21,15 +21,13 @@ class DonateApi extends Controller
      */
     public function index(Request $req)
     {
-       $check = Donate::orderby("created_at","desc")->where("id_truyen",Truyen::where("slug",$req->slug)->first()->id)->paginate(10);
-       $donates = json_decode(json_encode($check));
-       foreach ($check as $key => $value) {
-           $donates->data[$key]->name_user_donate = $value->getUserDonate->name;
-       }
-       $donates->total_donate = Donate::where('id_truyen',Truyen::where("slug",$req->slug)->first()->id)->count();
+       $donates = Donate::join("users","users.id","=","donates.user_donate")->orderby("donates.created_at","desc")->where("donates.id_truyen",Truyen::where("slug",$req->slug)->first()->id)->select("donates.*","users.name as name_user_donate")->paginate(10);
+       
+       $totalDonate = Donate::where('id_truyen',Truyen::where("slug",$req->slug)->first()->id)->count();
         return ['success'=>true,
                 'status'=>200,
-                'donates' => $donates
+                'donates' => $donates,
+               "totalDonate"=> $totalDonate
                 ];
     }
 
@@ -76,7 +74,7 @@ class DonateApi extends Controller
             return [
                 "success" => true,
                 "status" => 200,
-                "remaining_coins" =>$user_donate->coin
+                "remaining_coins" =>$user_donate->coin,
             ];
         }catch(\Exception $exception){
             DB::rollback();

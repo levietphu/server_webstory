@@ -1,8 +1,6 @@
 <tr>
 <td class="header">
-<a href="{{ $url }}" style="display: inline-block;">
-<img src="{{url("public/uploads/Config/logo-header.png")}}" class="logo" alt="webtruyen">
+<img src="https://139.162.17.88/public/uploads/Config/logo-header.png" class="logo" alt="webtruyen" style="width: 50px;height: 50px">
 {{ $slot }}
-</a>
 </td>
 </tr>

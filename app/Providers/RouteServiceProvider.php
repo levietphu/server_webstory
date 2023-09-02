@@ -47,49 +47,49 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/dashboard.php'));   
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/theloai.php')); 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/tacgia.php')); 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/truyen.php'));
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/chuongtruyen.php')); 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/admin.php'));  
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/config.php'));
-                Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/banner.php'));
-                 Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/backend/dichgia.php'));
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/dashboard.php'));   
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/theloai.php')); 
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/tacgia.php')); 
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/truyen.php'));
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/chuongtruyen.php')); 
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/admin.php'));  
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/config.php'));
+            //     Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/banner.php'));
+            //      Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/backend/dichgia.php'));
 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/frontend/home.php'));
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/frontend/truyen.php'));
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/frontend/danhmuc.php'));
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/frontend/chuongtruyen.php'));
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/frontend/search.php'));
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/frontend/home.php'));
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/frontend/truyen.php'));
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/frontend/danhmuc.php'));
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/frontend/chuongtruyen.php'));
+            // Route::middleware('web')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/frontend/search.php'));
             
         });
     }

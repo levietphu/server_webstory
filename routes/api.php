@@ -22,6 +22,7 @@ Route::get('list','Api\MultiApi@list');
 Route::get('translator','Api\MultiApi@translator');
 Route::get('search','Api\SearchApi@index');
 Route::get('search_chapter','Api\SearchApi@searchChapter');
+Route::get('author','Api\AuthorApi@index');
 Route::post('register','Api\AuthApi@register');
 Route::post('login','Api\AuthApi@login');
 Route::post('forgot','Api\AuthApi@forgot');
@@ -49,7 +50,6 @@ Route::get('show_transaction','Api\PaymentApi@show_transaction');
 Route::get('notification','Api\NotificationApi@index');
 Route::post('change_is_read','Api\NotificationApi@change_is_read');
 Route::post('change_is_view','Api\NotificationApi@change_is_view');
-
 
 //api cms
 Route::group(['prefix' => 'cms',"namespace" => "Api\Cms"], function() {

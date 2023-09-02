@@ -22,6 +22,7 @@ class HomeController extends Controller
         $truyenhot = Truyen::orderby('view_count','desc')->limit(5)->get();
         $truyenfull = Truyen::where('status',0)->limit(8)->get();
         $banner = Banner::orderby('created_at','desc')->limit(3)->get();
-        return view('frontend.pages.home', compact('truyenmoi','truyenhot','truyenfull','banner'));
+        $aa = env('MAIL_MAILER');
+        return view('frontend.pages.home', compact('truyenmoi','truyenhot','truyenfull','banner',"aa"));
     }
 }
