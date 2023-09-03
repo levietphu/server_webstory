@@ -97,13 +97,6 @@ class ChapterApi extends Controller
                     $user_chuong->bought=1;
                     $user_chuong->save();
 
-                    $bookmark = new BookMark();
-                    $bookmark->id_user=$req->id_user;
-                    $bookmark->id_chuong=$chuong->id;
-                    $bookmark->id_truyen=$truyen->id;
-                    $bookmark->bought=1;
-                    $bookmark->save();
-
                     if($req->id_user == $truyen->id_user){
                         DB::commit();
                         return [
@@ -165,25 +158,26 @@ class ChapterApi extends Controller
             if($chuong->coin==0 || $user_chuong_vip){
                 DB::beginTransaction();
 
-                $user_chuong = new BookMark();
-                $user_chuong->id_user=$req->id_user;
-                $user_chuong->id_chuong=$chuong->id;
-                $user_chuong->bought=0;
-                $user_chuong->id_truyen=$truyen->id;
-                $user_chuong->save();
+                $bookmark = new BookMark();
+                $bookmark->id_user=$req->id_user;
+                $bookmark->id_chuong=$chuong->id;
+                $bookmark->bought=0;
+                $bookmark->id_truyen=$truyen->id;
+                $bookmark->save();
 
                 DB::commit();
                 return [
                     "success"=>true,
                     "status"=>200,
-                    "message"=>"Thêm vào tủ sách thành công",
+                    "message"=>"Đã đánh dấu",
+                    "id"=>$bookmark->id
                 ];
 
             }
             return [
                 "success"=>false,
                 "status"=>400,
-                "message"=>"Chưa mua chương này,Vui lòng mua và tự động sẽ thêm vào tủ sách"
+                "message"=>"Chưa mua chương này,Vui lòng mua chương"
             ];
         }catch(\Exception $exception){
             DB::rollback();
@@ -211,5 +205,16 @@ class ChapterApi extends Controller
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
             return abort(500,"Lỗi hệ thống");
         }
+    }
+
+    public function remove_bookmark_item(Request $req)
+    {
+        BookMark::find($req->id)->delete();
+
+        return [
+            "success"=>true,
+            "status"=>200,
+            "message"=>"Đã bỏ đánh dấu"
+        ];
     }
 }

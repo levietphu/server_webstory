@@ -34,6 +34,7 @@ Route::get('get_chapter_story','Api\StoryApi@getChapterStory');
 Route::get('addview','Api\StoryApi@addViewCount');
 Route::get('view_chapter','Api\ChapterApi@viewChapter');
 Route::post('add_bookmark','Api\ChapterApi@add_bookmark');
+Route::post('remove_bookmark_item','Api\ChapterApi@remove_bookmark_item');
 Route::post('buy_chapter','Api\ChapterApi@buyChapter');
 Route::get('get_comment','Api\CommentApi@index');
 Route::get('get_chidren_comment','Api\CommentApi@children');
