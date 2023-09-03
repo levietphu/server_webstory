@@ -31,6 +31,7 @@ class NotificationApi extends Controller
             $noti_loadcents->data[$key]->user_loadcent= NotificationObject::find($value->id)->getTransition()->first()->getUser;
            $noti_loadcents->data[$key]->transition =NotificationObject::find($value->id)->getTransition()->first();
        }
+
       
         return [
             "success"=>true,

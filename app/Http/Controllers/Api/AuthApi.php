@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Users_chuongtruyen;
+use App\Models\LoginHistory;
 use App\Models\BookMark;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
@@ -16,6 +17,7 @@ use Str;
 use DB;
 use Log;
 use Carbon\Carbon;
+use \Jenssegers\Agent\Agent;
 
 class AuthApi extends Controller
 {
@@ -52,6 +54,7 @@ public function login(LoginRequest $req)
 {
     $email = $req->email;
     $password = $req->password;
+    $agent = new Agent;
     if(str_contains($email, "@")){
         $user = User::where('email',$email)->first();
     }else{
@@ -65,15 +68,37 @@ public function login(LoginRequest $req)
     if (!Hash::check($password, $user->password)) {
         return abort(400,'Mật khẩu không đúng');
     }
-    $user->remember_token = Str::random(60);
-    $user->save();
+
+     try{
+        DB::beginTransaction();
+
+        $user->remember_token = Str::random(60);
+        $user->save();
+
+        $login_history = new LoginHistory;
+        $login_history->id_user = $user->id;
+        $login_history->browser = $agent->browser();
+        $login_history->browser_version = $agent->version($agent->browser());
+        $login_history->platform = $agent->platform();
+        $login_history->ip_address = $req->ip();
+        $login_history->save();
+
+        DB::commit();
+
+        return [
+            'success'=>true,
+            'status'=>200,
+            'data' => ['result' => 'Đăng nhập thành công','token'=>$user->remember_token]
+        ]; 
+    }catch(\Exception $exception){
+        DB::rollback();
+        Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
+        return abort(500);
+    }   
+    
 
 
-    return [
-        'success'=>true,
-        'status'=>200,
-        'data' => ['result' => 'Đăng nhập thành công','token'=>$user->remember_token]
-    ]; 
+    
     
 }
 
