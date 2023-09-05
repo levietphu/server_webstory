@@ -46,7 +46,7 @@ class AuthApi extends Controller
     }catch(\Exception $exception){
         DB::rollback();
         Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-        return abort(500,"Đăng ký thất bại");
+        return abort(500,"Lỗi hệ thống");
     }
 }
 
@@ -93,13 +93,8 @@ public function login(LoginRequest $req)
     }catch(\Exception $exception){
         DB::rollback();
         Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-        return abort(500);
+        return abort(500,"Lỗi hệ thống");
     }   
-    
-
-
-    
-    
 }
 
 public function getUser(Request $req)
@@ -176,7 +171,7 @@ public function forgot(Request $req)
     }catch(\Exception $exception){
         DB::rollback();
         Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-        return abort(500);
+        return abort(500,"Lỗi hệ thống");
     }   
 }
 
@@ -232,7 +227,7 @@ public function add_coin(Request $req)
             "message"=>"Thêm coin cho user thành công"
         ];
     }
-    return abort(500);
+    return abort(500,"Lỗi hệ thống");
 }
 
 }

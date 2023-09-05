@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'sendmail'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -55,7 +55,7 @@ return [
 
         'postmark' => [
             'transport' => 'postmark',
-            // 'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),    
+            'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),    
         ],
 
         'sendmail' => [
@@ -85,7 +85,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'tieuabavuong91@gmail.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'tienvuc0107@gmail.com'),
         'name' => env('MAIL_FROM_NAME', 'Hỗ trợ webtruyen'),
     ],
 
