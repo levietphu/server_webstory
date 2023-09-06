@@ -23,7 +23,7 @@ class CommentApi extends Controller
         $story = Truyen::where("slug",$req->slug)->first();
 
         // Hiển thị comment
-        $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->paginate(1);
+        $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->paginate(3);
         $comments_story = json_decode(json_encode($check_comment));
 
         foreach ($check_comment as $key => $value) {
@@ -79,7 +79,6 @@ class CommentApi extends Controller
                 $noti->save();
 
                 $noti_obj->getComment()->attach($comment->id);
-
 
                 DB::commit();
                 return [
