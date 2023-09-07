@@ -73,15 +73,15 @@ class CommentApi extends Controller
                 $comment->status=1;
                 $comment->save();
 
-                // $noti_obj = new NotificationObject;
-                // $noti_obj->type = 1;
-                // $noti_obj->save();
+                $noti_obj = new NotificationObject;
+                $noti_obj->type = 1;
+                $noti_obj->save();
 
-                // $noti = new Notification;
-                // $noti->id_noti_object = $noti_obj->id;
-                // $noti->save();
+                $noti = new Notification;
+                $noti->id_noti_object = $noti_obj->id;
+                $noti->save();
 
-                // $noti_obj->getComment()->attach($comment->id);
+                $noti_obj->getComment()->attach($comment->id);
 
                 $comment['user'] = $comment->user_comment()->select("id","name")->first();
                 $comment['user']['roles'] = $comment["user"]->getRole()->select("roles.id","roles.name")->get();
