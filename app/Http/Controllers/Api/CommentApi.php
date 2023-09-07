@@ -21,20 +21,22 @@ class CommentApi extends Controller
     public function index(Request $req)
     {
         $story = Truyen::where("slug",$req->slug)->first();
-
+        $offset = $req->offset;
+        $total_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->get()->count()-3;
         // Hiển thị comment
-        $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->paginate(3);
+        $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->limit(3)->offset($offset)->get();
         $comments_story = json_decode(json_encode($check_comment));
 
         foreach ($check_comment as $key => $value) {
-            $comments_story->data[$key]->user = $value->user_comment()->select("id","name")->first();
-            $comments_story->data[$key]->user->roles = $comments_story->data[$key]->user->getRole()->select("roles.id","roles.name")->get();
+            $comments_story[$key]->user = $value->user_comment()->select("id","name")->first();
+            $comments_story[$key]->user->roles = $comments_story[$key]->user->getRole()->select("roles.id","roles.name")->get();
         }
         
         return [
             "success"=>true,
             "status"=>200,
             "comments_story"=>$comments_story,
+            "total_comment"=>$total_comment
         ];
     }
 
@@ -68,18 +70,18 @@ class CommentApi extends Controller
                 $comment ->id_truyen = $story->id;
                 $comment ->content = !$req->content?$req->reply_content:$req->content;
                 $comment ->id_parent = $req->id_parent;
-                $comment->status = 1;
+                $comment->status=1;
                 $comment->save();
 
-                $noti_obj = new NotificationObject;
-                $noti_obj->type = 1;
-                $noti_obj->save();
+                // $noti_obj = new NotificationObject;
+                // $noti_obj->type = 1;
+                // $noti_obj->save();
 
-                $noti = new Notification;
-                $noti->id_noti_object = $noti_obj->id;
-                $noti->save();
+                // $noti = new Notification;
+                // $noti->id_noti_object = $noti_obj->id;
+                // $noti->save();
 
-                $noti_obj->getComment()->attach($comment->id);
+                // $noti_obj->getComment()->attach($comment->id);
 
                 $comment['user'] = $comment->user_comment()->select("id","name")->first();
                 $comment['user']['roles'] = $comment["user"]->getRole()->select("roles.id","roles.name")->get();
@@ -95,7 +97,7 @@ class CommentApi extends Controller
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return abort(500);
+            return abort(500,$exception->getMessage());
         }
 
     }
