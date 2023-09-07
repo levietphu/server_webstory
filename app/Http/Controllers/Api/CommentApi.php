@@ -68,6 +68,7 @@ class CommentApi extends Controller
                 $comment ->id_truyen = $story->id;
                 $comment ->content = !$req->content?$req->reply_content:$req->content;
                 $comment ->id_parent = $req->id_parent;
+                $comment->status = 1;
                 $comment->save();
 
                 $noti_obj = new NotificationObject;
@@ -80,17 +81,21 @@ class CommentApi extends Controller
 
                 $noti_obj->getComment()->attach($comment->id);
 
+                $comment['user'] = $comment->user_comment()->select("id","name")->first();
+                $comment['user']['roles'] = $comment["user"]->getRole()->select("roles.id","roles.name")->get();
+                
                 DB::commit();
                 return [
                     "success" => true,
                     "status" => 200,
-                    "message" =>"Thêm comment thành công"
+                    "message" =>"Thêm comment thành công",
+                    "comment" => $comment
                 ];
             }
         }catch(\Exception $exception){
             DB::rollback();
             Log::error('message:'.$exception->getMessage().'Line'.$exception->getLine());
-            return abort(500,"Lỗi hệ thống");
+            return abort(500);
         }
 
     }
