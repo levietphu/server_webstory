@@ -31,7 +31,7 @@ Route::post('change_pass','Api\AuthApi@change_pass');
 Route::get('getUser','Api\AuthApi@getUser');
 Route::get('get_story','Api\StoryApi@getStory');
 Route::get('get_chapter_story','Api\StoryApi@getChapterStory');
-Route::get('addview','Api\StoryApi@addViewCount');
+Route::post('addview','Api\StoryApi@addViewCount');
 Route::get('view_chapter','Api\ChapterApi@viewChapter');
 Route::post('add_bookmark','Api\ChapterApi@add_bookmark');
 Route::post('remove_bookmark_item','Api\ChapterApi@remove_bookmark_item');

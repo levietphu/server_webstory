@@ -21,10 +21,11 @@ class CommentApi extends Controller
     public function index(Request $req)
     {
         $story = Truyen::where("slug",$req->slug)->first();
+        $limit = 3;
         $offset = $req->offset;
-        $total_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->get()->count()-3;
+        $total_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->get()->count()-$limit;
         // Hiển thị comment
-        $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->limit(3)->offset($offset)->get();
+        $check_comment = Comment::where("id_truyen",$story->id)->where('id_parent',0)->where('status',1)->orderby("created_at",'desc')->limit($limit)->offset($offset)->get();
         $comments_story = json_decode(json_encode($check_comment));
 
         foreach ($check_comment as $key => $value) {
