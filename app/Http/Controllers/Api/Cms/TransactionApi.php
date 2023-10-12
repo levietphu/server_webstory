@@ -48,10 +48,11 @@ class TransactionApi extends Controller
                 $transition->save();
 
                 if($req->status ==1){
+                    DB::commit();
                     return [
                          "success"=>false,
                          "status"=>400,
-                         "message"=>"Yêu cầu không được duyệt"
+                         "message"=>"Không được duyệt"
                      ];
                  }
 
